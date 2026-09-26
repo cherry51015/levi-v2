@@ -1,0 +1,32 @@
+{
+  "backends": {
+    "torch": {
+      "backend": "torch",
+      "import_s": 17.96,
+      "model_load_s": 1.8,
+      "cold_start_s": 19.76,
+      "embed_passages_per_s": 4.1,
+      "embed_query_ms_p50": 158.4,
+      "rerank_10_ms_p50": 817.1,
+      "rerank_10_ms_p95": 1260.1,
+      "process_wall_s": 73.6
+    },
+    "onnx": {
+      "backend": "onnx",
+      "import_s": 1.78,
+      "model_load_s": 4.19,
+      "cold_start_s": 5.97,
+      "embed_passages_per_s": 3.5,
+      "embed_query_ms_p50": 360.5,
+      "rerank_10_ms_p50": 1667.5,
+      "rerank_10_ms_p95": 1947.2,
+      "process_wall_s": 90.5
+    }
+  },
+  "parity": {
+    "embedding_cosine_mean": 0.99999,
+    "embedding_cosine_min": 0.99999,
+    "rerank_spearman_mean": 0.9628,
+    "rerank_top1_agreement": 0.733
+  }
+}

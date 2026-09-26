@@ -1,0 +1,21 @@
+{
+  "mode": "hybrid",
+  "max_false_refusal": 0.1,
+  "chosen_on_tune": {
+    "threshold": 0.5548,
+    "refusal_precision": 0.76,
+    "refusal_recall": 0.317,
+    "false_refusal_rate": 0.1
+  },
+  "test": {
+    "threshold": 0.5548,
+    "refusal_precision": 0.786,
+    "refusal_recall": 0.301,
+    "false_refusal_rate": 0.128
+  },
+  "separation": {
+    "answerable_conf_mean": 0.605,
+    "unanswerable_conf_mean": 0.577
+  },
+  "n_questions": 240
+}
