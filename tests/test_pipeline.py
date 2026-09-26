@@ -96,10 +96,23 @@ def test_answer_that_is_only_advice_becomes_refusal():
     assert r.status == "refused_advice"
 
 
-def test_uncertain_router_escalates_to_llm():
-    llm = FakeLLM(json.dumps({"label": "off_topic"}))
-    r = ask(setup(FakeRouter("informational", conf=0.4), llm))
-    assert r.intent == "off_topic" and r.intent_source == "llm"
+def test_uncertain_off_topic_guess_fails_open_to_retrieval():
+    # "Is a trip to France mentioned?" looks off-topic but is a question about the document.
+    llm = FakeLLM(answer("Notice is 30 days."))
+    r = ask(setup(FakeRouter("off_topic", conf=0.45), llm))
+    assert r.intent == "informational" and r.intent_source == "uncertain"
+    assert r.status == "answered" and llm.calls == 1
+
+
+def test_uncertain_advice_guess_keeps_safe_mode():
+    r = ask(setup(FakeRouter("advice", conf=0.45), FakeLLM(answer("Notice is 30 days."))), "Is this ok?")
+    assert r.intent == "advice" and r.notice is not None
+
+
+def test_confident_off_topic_is_blocked():
+    llm = FakeLLM()
+    r = ask(setup(FakeRouter("off_topic", conf=0.9), llm))
+    assert r.status == "off_topic" and llm.calls == 0
 
 
 def test_advice_detector_ignores_document_language():

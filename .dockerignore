@@ -7,6 +7,9 @@ __pycache__/
 data/
 logs/
 models_cache/
-eval/
+eval/*
+!eval/results
+eval/results/*.log
+eval/results/invalid
 tests/
 logs_*.txt

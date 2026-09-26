@@ -8,6 +8,7 @@
 So an answer can only contain statements tied to the user's own document.
 """
 import json
+import re
 from typing import Callable, Literal
 
 from pydantic import BaseModel, Field, ValidationError
@@ -46,7 +47,43 @@ class Citation(BaseModel):
     ref: str  # the short id shown to the model, e.g. "c2"
     chunk_id: str
     page: int | None
-    snippet: str
+    snippet: str  # the part of the chunk that best matches the claims citing it
+    text: str  # the full chunk, so the user can read the evidence in context
+    highlights: list[str] = []  # words shared by claim and snippet, for display
+    score: float  # retrieval score of this chunk (rerank logit when reranking is on)
+
+
+_SENTENCE_SPLIT = re.compile(r"(?<=[.;:!?])\s+|\n+")
+_WORD = re.compile(r"[A-Za-z0-9][A-Za-z0-9'%-]*")
+_STOPWORDS = {"the", "and", "for", "that", "this", "with", "any", "are", "was", "has", "have", "shall", "may", "not",
+              "its", "his", "her", "their", "from", "which", "such", "each", "other", "under", "into", "upon", "been",
+              "will", "all", "also", "than", "then", "there", "these", "those", "agreement", "party", "parties"}
+
+
+def _content_words(text: str) -> set[str]:
+    return {w.lower() for w in _WORD.findall(text) if len(w) > 2 and w.lower() not in _STOPWORDS}
+
+
+def evidence_snippet(chunk_text: str, claims: list[str], max_chars: int = 320) -> tuple[str, list[str]]:
+    """Pick the sentence(s) of the chunk that share the most words with the claims.
+
+    A plain lexical overlap is enough here: the claim was written from this chunk,
+    so it reuses the chunk's wording. Returns (snippet, shared words to highlight).
+    """
+    wanted = set().union(*(_content_words(c) for c in claims)) if claims else set()
+    sentences = [s for s in _SENTENCE_SPLIT.split(chunk_text) if s.strip()]
+    if not sentences:
+        return chunk_text[:max_chars], []
+    best = max(range(len(sentences)), key=lambda i: len(_content_words(sentences[i]) & wanted))
+    snippet, j = sentences[best].strip(), best + 1
+    while j < len(sentences) and len(snippet) + len(sentences[j]) < max_chars:
+        snippet += " " + sentences[j].strip()
+        j += 1
+    if len(snippet) > max_chars:
+        snippet = snippet[:max_chars].rsplit(" ", 1)[0] + " ..."
+    if best > 0:
+        snippet = "... " + snippet
+    return snippet, sorted(_content_words(snippet) & wanted)
 
 
 ADVICE_MODE_INSTRUCTION = """
@@ -151,10 +188,12 @@ async def generate_answer(llm: LLMClient, question: str, chunks: list[ScoredChun
                               dropped_claims=dropped, provider=result.provider, llm_attempts=attempts)
 
     used = dict.fromkeys(ref for c in claims for ref in c.citations)
-    citations = [
-        Citation(ref=ref, chunk_id=refs[ref].chunk.id, page=refs[ref].chunk.page, snippet=refs[ref].chunk.text[:300])
-        for ref in used
-    ]
+    citations = []
+    for ref in used:
+        chunk = refs[ref].chunk
+        snippet, highlights = evidence_snippet(chunk.text, [c.text for c in claims if ref in c.citations])
+        citations.append(Citation(ref=ref, chunk_id=chunk.id, page=chunk.page, snippet=snippet, text=chunk.text,
+                                  highlights=highlights, score=round(refs[ref].score, 3)))
     return GroundedAnswer(status="answered", answer=render(claims), claims=claims, citations=citations,
                           dropped_claims=dropped, advice_claims_removed=advice_removed,
                           removed_advice_claims=flagged if is_advice is not None else [],

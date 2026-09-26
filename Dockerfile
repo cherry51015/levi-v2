@@ -20,6 +20,8 @@ ENV HF_HUB_OFFLINE=1
 
 COPY app/ app/
 COPY ui/ ui/
+# Evaluation results feed the UI's Evaluation tab.
+COPY eval/results/ eval/results/
 COPY .streamlit/ .streamlit/
 COPY start.sh .
 

@@ -2,5 +2,16 @@
 maxUploadSize = 10  # MB; matches the API's LEVI_MAX_UPLOAD_MB so users see the real limit
 address = "127.0.0.1"  # the container entrypoint overrides this for deployment
 
+[client]
+toolbarMode = "minimal"  # hide developer menu items like Deploy
+
 [browser]
 gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#2a78d6"
+backgroundColor = "#f9f9f7"
+secondaryBackgroundColor = "#f3f2ee"
+textColor = "#0b0b0b"
+font = "sans serif"

@@ -1,7 +1,7 @@
 import asyncio
 import json
 
-from levi.answer import build_messages, enforce_citations, generate_answer, ModelAnswer
+from levi.answer import ModelAnswer, build_messages, enforce_citations, evidence_snippet, generate_answer
 from levi.llm import LLMResult
 from levi.schemas import Chunk, ScoredChunk
 
@@ -73,3 +73,17 @@ def test_invalid_json_gets_one_repair_attempt():
 def test_invalid_twice_is_an_error_not_a_crash():
     llm = FakeLLM("nope", "still nope")
     assert run(llm).status == "error"
+
+
+def test_evidence_snippet_finds_the_supporting_sentence():
+    chunk = ("The Tenant is responsible for minor repairs. The premises shall be used only as a residence. "
+             "Either party may terminate this lease by giving two (2) months' written notice.")
+    snippet, words = evidence_snippet(chunk, ["Either party may terminate the lease with two months' written notice."])
+    assert snippet.startswith("... Either party may terminate")
+    assert "terminate" in words and "repairs" not in words
+
+
+def test_citation_carries_full_text_and_score():
+    reply = json.dumps({"answerable": True, "claims": [{"text": "clause 1 text", "citations": ["c2"]}]})
+    c = run(FakeLLM(reply)).citations[0]
+    assert c.text == "clause 1 text" and c.score == 0.9

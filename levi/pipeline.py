@@ -1,7 +1,7 @@
 """The /ask request path, with every guardrail layer visible in order:
 
-  embed query (once) -> [L1] intent router (classifier, LLM only if unsure)
-  -> off_topic? reply without retrieval or LLM
+  embed query (once) -> [L1] intent router (classifier on that embedding)
+  -> confidently off_topic? reply without retrieval or LLM
   -> hybrid retrieval (reuses the query embedding)
   -> [L3] refusal if retrieval confidence is below the tuned threshold (no LLM call)
   -> [L2] generate: stricter "facts only" mode for advice-seeking questions
@@ -14,7 +14,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from levi.answer import REFUSAL_LOW_CONFIDENCE, GroundedAnswer, generate_answer
-from levi.guardrails import ADVICE_NOTE, OFF_TOPIC_REPLY, IntentRouter, contains_advice, llm_classify
+from levi.guardrails import ADVICE_NOTE, OFF_TOPIC_REPLY, IntentRouter, contains_advice
 from levi.llm import LLMClient
 from levi.retrieval import Retriever
 from levi.schemas import ScoredChunk
@@ -27,7 +27,7 @@ class AskResponse(GroundedAnswer):
                     "refused_advice", "off_topic", "error"]
     intent: str
     intent_confidence: float
-    intent_source: Literal["classifier", "llm", "disabled"]
+    intent_source: Literal["classifier", "uncertain", "disabled"]
     notice: str | None = None
     retrieval_confidence: float | None = None
     timings_ms: dict[str, float] = {}
@@ -71,19 +71,23 @@ class Pipeline:
         return fn(*args, **kwargs)
 
     @observe(name="intent_router", as_type="guardrail", capture_input=False, capture_output=False)
-    async def _route(self, question: str, qvec, timer: StageTimer) -> tuple[str, float, str]:
-        """Layer 1: cheap classifier first, LLM only when the classifier is unsure."""
+    def _route(self, question: str, qvec, timer: StageTimer) -> tuple[str, float, str]:
+        """Layer 1. The classifier's label is trusted only when it is confident.
+
+        When unsure, fail open to retrieval: the refusal gate and the LLM's own
+        "not answerable" check decide whether the document covers the question.
+        Exception: an uncertain "advice" guess still gets the safer facts-only mode,
+        since that mode costs nothing if the question was actually informational.
+        (An earlier version asked an LLM to classify uncertain queries; it added
+        ~2.4s and misrouted document questions like "is a trip mentioned?" as off_topic.)
+        """
         with timer.stage("route"):
             intent, conf = self.router.predict(qvec)
         source = "classifier"
         if not self.router.is_confident(conf):
-            with timer.stage("route_llm"):
-                try:
-                    llm_label = await llm_classify(self.llm, question)
-                except Exception:
-                    llm_label = None  # classifier's guess stands; routing must not fail the request
-            if llm_label:
-                intent, source = llm_label, "llm"
+            source = "uncertain"
+            if intent != "advice":
+                intent = "informational"
         update_span(input=question, output={"intent": intent, "confidence": round(conf, 3), "source": source})
         return intent, conf, source
 
@@ -94,7 +98,7 @@ class Pipeline:
         with timer.stage("embed_query"):
             qvec = await self._cpu(self.retriever.embedder.embed_query, question)
         if self.use_router:
-            intent, conf, source = await self._route(question, qvec, timer)
+            intent, conf, source = self._route(question, qvec, timer)
         else:
             intent, conf, source = "informational", 1.0, "disabled"
         base = dict(intent=intent, intent_confidence=round(conf, 3), intent_source=source)
