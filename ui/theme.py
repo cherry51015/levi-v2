@@ -289,6 +289,22 @@ header[data-testid="stHeader"] { background: transparent; }
   background: linear-gradient(135deg,#1c5cab,#22b8cf); box-shadow: 0 6px 14px rgba(28,92,171,.25); }
 .lv-flow-step .t { font-weight:650; color:#101828; font-size:.92rem; }
 .lv-flow-step .d { color:#475467; font-size:.82rem; margin-top:2px; }
+/* ---- guardrail rows: label on top, explanation full-width below; long names wrap ---- */
+.lv-checks li { display:grid !important; grid-template-columns: 20px minmax(0, 1fr); column-gap:10px; row-gap:1px;
+  align-items:start; }
+.lv-checks .icon { grid-row: span 2; width:auto !important; padding-top:1px; }
+.lv-checks .what { min-width:0 !important; }
+.lv-checks .detail { grid-column: 2; min-width:0; overflow-wrap:anywhere; line-height:1.45; }
+
+/* ---- professional background: soft mesh gradient + faint dot grid, fixed while scrolling ---- */
+.stApp { background:
+    radial-gradient(rgba(28,92,171,.07) 1px, transparent 1.2px) 0 0 / 22px 22px,
+    radial-gradient(1100px 600px at -10% -10%, rgba(42,120,214,.16), transparent 60%),
+    radial-gradient(900px 600px at 110% 20%, rgba(34,184,207,.12), transparent 60%),
+    radial-gradient(900px 700px at 50% 120%, rgba(99,102,241,.08), transparent 60%),
+    linear-gradient(180deg, #f6f9fd 0%, #eef3fa 100%) !important;
+  background-attachment: fixed !important; }
+.block-container { position:relative; }
 </style>
 """
 

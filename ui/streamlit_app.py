@@ -123,15 +123,14 @@ def guardrail_checks(b: dict) -> str:
     status = b["status"]
     reached_retrieval = status not in ("off_topic",)
     reached_llm = reached_retrieval and status != "refused_low_confidence" and b.get("provider")
-    src = {"classifier": "confident", "uncertain": "unsure, so retrieval decides", "disabled": "off"}
+    src = {"classifier": "confident", "uncertain": "unsure, so the evidence decides", "disabled": "off"}
     checks = [("✓", GOOD, "Intent router", f'{b["intent"]} · confidence {b["intent_confidence"]:.2f} · '
                                            f'{src.get(b["intent_source"], b["intent_source"])}')]
     if b.get("scoped_to"):
         checks.append(("✓", GOOD, "Document scope",
-                       "question named a document: searched only " + ", ".join(names.get(d, d) for d in b["scoped_to"])))
+                       "searched only " + ", ".join(names.get(d, d) for d in b["scoped_to"])))
     if b.get("answer_mode") == "overview":
-        checks.append(("✓", GOOD, "Document overview",
-                       "whole-document question: answered from the overview built at upload"))
+        checks.append(("✓", GOOD, "Document overview", "answered from the document's cited overview"))
         checks.append(("✓", GOOD, "Citation check", f'{len(b.get("claims", []))} overview claims, each citing a passage'))
         return '<ul class="lv-checks">' + "".join(
             f'<li><span class="icon" style="color:{c}">{i}</span><span class="what">{esc(w)}</span>'
