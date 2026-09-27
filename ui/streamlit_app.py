@@ -78,7 +78,7 @@ with st.sidebar:
 
 
 # ---------------------------------------------------------------- header
-st.markdown(hero(), unsafe_allow_html=True)
+st.markdown(hero(eval_view.headline_kpis()), unsafe_allow_html=True)
 
 tab_ask, tab_eval, tab_how = st.tabs(["Ask", "Evaluation", "How it works"])
 

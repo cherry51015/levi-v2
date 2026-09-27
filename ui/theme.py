@@ -204,19 +204,73 @@ header[data-testid="stHeader"] { background: transparent; }
 .lv-tile.feature .d { color: #cde2fb; }
 .lv-card-title { color: #1c5cab; }
 .lv-step .n { background: linear-gradient(135deg, #13325b, #1c5cab); }
+/* ---- "Levi blue" design pass: depth, glow, texture ---- */
+.stApp { background:
+    radial-gradient(900px 500px at 0% 0%, rgba(42,120,214,.10), transparent 60%),
+    radial-gradient(800px 500px at 100% 100%, rgba(34,184,207,.09), transparent 60%),
+    #f3f6fb !important; }
+
+.lv-hero { background:
+    radial-gradient(rgba(255,255,255,.10) 1px, transparent 1px) 0 0 / 18px 18px,
+    radial-gradient(700px 240px at 95% -20%, rgba(34,184,207,.45), transparent 60%),
+    linear-gradient(120deg, #0b1628 0%, #13325b 45%, #1c5cab 80%, #1f8fb8 100%) !important;
+  padding: 26px 30px 22px 30px; }
+.lv-hero .kpis { display:flex; gap:28px; flex-wrap:wrap; margin-top:18px; padding-top:16px; border-top:1px solid rgba(255,255,255,.16); }
+.lv-hero .kpi .n { font-size:1.6rem; font-weight:800; letter-spacing:-.02em; line-height:1;
+  background: linear-gradient(90deg, #ffffff, #b9e6f2); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.lv-hero .kpi .l { font-size:.76rem; color:#b8cde8; margin-top:4px; }
+
+.lv-tile { padding-top:22px; }
+.lv-tile .ic { position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:10px; display:flex;
+  align-items:center; justify-content:center; font-size:1rem; font-weight:800; color:#fff;
+  background: linear-gradient(135deg, #1c5cab, #22b8cf); box-shadow: 0 6px 14px rgba(28,92,171,.25); }
+.lv-tile.feature .ic { background: rgba(255,255,255,.16); box-shadow:none; }
+.lv-tile::before { background: linear-gradient(90deg, #1c5cab, #22b8cf) !important; }
+.lv-tile.feature::before { background: linear-gradient(90deg, #86b6ef, #b9e6f2) !important; }
+
+.lv-claims { list-style:none; padding-left:0; }
+.lv-claims li { position:relative; padding-left:28px; }
+.lv-claims li::before { content:"✓"; position:absolute; left:0; top:2px; width:19px; height:19px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:800; color:#fff;
+  background: linear-gradient(135deg, #1c5cab, #22b8cf); }
+
+.lv-src { position:relative; border-left:none; padding-left:16px; }
+.lv-src::before { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:12px 0 0 12px;
+  background: linear-gradient(180deg, #1c5cab, #22b8cf); }
+.lv-src-body mark { background: linear-gradient(180deg, transparent 55%, #b9e6f2 55%); padding:0 1px; }
+
+.lv-pill { box-shadow: 0 1px 2px rgba(16,24,40,.06); }
+.lv-chip { background: linear-gradient(135deg, #eaf2fd, #e3f6fa); border-color:#b9d8f5; color:#13325b; }
+
+.lv-steps .lv-arrow { color:#2a78d6; font-weight:800; }
+.lv-step::before { content:""; position:absolute; left:0; top:0; right:0; height:3px; border-radius:12px 12px 0 0;
+  background: linear-gradient(90deg, #1c5cab, #22b8cf); }
+.lv-step .n { background: linear-gradient(135deg, #1c5cab, #22b8cf) !important; box-shadow: 0 6px 14px rgba(28,92,171,.25); }
+
+.lv-stat .value { background: linear-gradient(135deg, #0d1b2e, #1c5cab); -webkit-background-clip:text; background-clip:text;
+  color:transparent; }
+[data-testid="stMetricValue"] { background: linear-gradient(135deg, #0d1b2e, #1c5cab); -webkit-background-clip:text;
+  background-clip:text; color:transparent !important; }
+.lv-q::before, .lv-card-title { }
+.lv-hero-eval .lv-hero-sub b { color:#1c5cab; }
+.lv-status span { background: linear-gradient(135deg, #eaf7ee, #e6f6fa); }
 </style>
 """
 
 HERO_BADGES = ["Every claim cited", "Says when it doesn't know", "No legal advice", "Open-weight models"]
 
 
-def hero() -> str:
+def hero(kpis: list[tuple[str, str]] | None = None) -> str:
+    """Brand banner; `kpis` are measured headline results (value, label) shown in the banner."""
     badges = "".join(f'<span class="badge">✓ {b}</span>' for b in HERO_BADGES)
+    kpi_html = ("<div class=\"kpis\">" + "".join(f'<div class="kpi"><div class="n">{esc(v)}</div>'
+                                                   f'<div class="l">{esc(l)}</div></div>' for v, l in kpis) + "</div>"
+                if kpis else "")
     return ('<div class="lv-hero"><div class="row"><div class="lv-logo">⚖️</div><div><div class="name">Levi</div>'
             '<div class="tag">Answers from your contracts, with the receipts</div></div></div>'
             '<div class="sub">Ask anything about your documents. Every answer shows the exact passage it came from, '
             'and Levi tells you when the answer isn\'t there.</div>'
-            f'<div class="badges">{badges}</div></div>')
+            f'<div class="badges">{badges}</div>{kpi_html}</div>')
 
 
 # status -> (label, colour, icon). Colour never carries meaning alone: icon + label always shown.

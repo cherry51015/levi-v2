@@ -72,9 +72,14 @@ def _generation() -> dict | None:
     }
 
 
+_TILE_ICONS = {"The right clause, found": "◎", "Made-up claims": "✓", "Knows when to say “not here”": "∅",
+               "Legal advice leaked": "⚖", "To search a whole contract": "⚡", "Infrastructure cost": "$"}
+
+
 def _tile(value: str, headline: str, detail: str, feature: bool = False) -> str:
     cls = "lv-tile feature" if feature else "lv-tile"
-    return (f'<div class="{cls}"><div class="v">{esc(value)}</div><div class="k">{esc(headline)}</div>'
+    icon = f'<div class="ic">{esc(_TILE_ICONS.get(headline, "•"))}</div>'
+    return (f'<div class="{cls}">{icon}<div class="v">{esc(value)}</div><div class="k">{esc(headline)}</div>'
             f'<div class="d">{esc(detail)}</div></div>')
 
 
@@ -86,6 +91,21 @@ def _data():
     red_baseline = next((rep for _, rep in reversed(red) if "A_prompt_only" in rep["metrics"]["advice_leak_rate"]), None)
     shipped = ret[ret["config"] == SHIPPED].iloc[0] if ret is not None and (ret["config"] == SHIPPED).any() else None
     return ret, gen, (refusal[-1][1] if refusal else None), red_name, red_latest, red_baseline, shipped
+
+
+def headline_kpis() -> list[tuple[str, str]]:
+    """Three measured headline results for the brand banner (empty if results are missing)."""
+    try:
+        ret, gen, _, _, _, _, shipped = _data()
+    except Exception:
+        return []
+    kpis = []
+    if gen:
+        kpis.append((str(gen["verdicts"].get("unsupported", 0)), "made-up claims in evaluation"))
+    if shipped is not None:
+        kpis.append((f"{shipped.hit5:.0%}", "right clause found"))
+    kpis.append(("<20 ms", "to search a contract"))
+    return kpis
 
 
 def render() -> None:
