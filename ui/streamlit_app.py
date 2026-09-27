@@ -31,6 +31,10 @@ def api(method: str, path: str, **kwargs):
         st.stop()
 
 
+if os.getenv("LEVI_UI_MODE") == "local":  # single-process hosts (Streamlit Cloud): run the API in-process
+    from embedded import api  # noqa: F811
+
+
 # ---------------------------------------------------------------- sidebar: library + system
 with st.sidebar:
     st.markdown('<div class="lv-sidebrand"><span>L</span>Levi</div>', unsafe_allow_html=True)

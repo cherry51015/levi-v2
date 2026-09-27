@@ -156,7 +156,7 @@ python -m venv .venv && .venv/Scripts/activate        # Windows; use .venv/bin/a
 pip install -r requirements.txt
 cp .env.example .env                                    # add GROQ_API_KEY (+ optional OPENROUTER / LANGFUSE keys)
 uvicorn app.main:app --port 8000                        # API docs: http://127.0.0.1:8000/docs
-streamlit run ui/streamlit_app.py --server.port 8501    # UI: http://localhost:8501
+streamlit run ui/streamlit_app.py --server.port 8501 --server.address 127.0.0.1   # UI
 ```
 
 Only one API process can open the embedded Qdrant folder at a time.
@@ -166,6 +166,16 @@ Only one API process can open the embedded Qdrant folder at a time.
 docker build -t levi-v2 .
 docker run --env-file .env -p 7860:7860 levi-v2          # http://localhost:7860
 ```
+
+**Streamlit Community Cloud** (free backup link; small CPU, so answers are slower than locally):
+the UI hosts the same FastAPI app in-process (`ui/embedded.py`), so no second server is needed. Create an app from
+this repo with main file `ui/streamlit_app.py` (Python 3.12), and in its Secrets set:
+```toml
+LEVI_UI_MODE = "local"
+GROQ_API_KEY = "..."
+# optional: OPENROUTER_API_KEY, LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST
+```
+Dependencies come from `ui/requirements.txt` (CPU-only PyTorch). Uploaded documents reset when the app restarts.
 
 **Tests and evals:**
 ```bash
