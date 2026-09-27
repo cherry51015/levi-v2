@@ -16,4 +16,6 @@ for _ in $(seq 1 180); do
   sleep 1
 done
 
-exec streamlit run ui/streamlit_app.py --server.address 0.0.0.0 --server.port 7860 --server.headless true
+# Spaces serve the app inside an iframe behind a proxy; Streamlit's XSRF/CORS checks would block file uploads there.
+exec streamlit run ui/streamlit_app.py --server.address 0.0.0.0 --server.port 7860 --server.headless true \
+  --server.enableXsrfProtection false --server.enableCORS false
