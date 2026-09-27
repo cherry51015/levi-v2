@@ -11,7 +11,7 @@ from charts import confidence_track, stage_timeline
 from theme import CSS, GOOD, INK_2, MUTED, WARNING, card, esc, fmt_ms, highlight, pill, stat
 
 API = os.getenv("LEVI_API_URL", "http://127.0.0.1:8000")
-REFUSAL_THRESHOLD = float(os.getenv("LEVI_REFUSAL_THRESHOLD", "-7.49"))
+REFUSAL_THRESHOLD = float(os.getenv("LEVI_REFUSAL_THRESHOLD", "-8.65"))
 EXAMPLES = ["What is the notice period for termination?", "Which law governs this agreement?",
             "Is there a cap on liability?", "Should I sign this agreement?"]
 
@@ -73,9 +73,9 @@ with st.sidebar:
 
 
 # ---------------------------------------------------------------- header
-st.markdown('<div class="lv-brand"><span class="name">⚖️ Levi</span><span class="tag">legal document Q&A with '
-            'cited evidence</span></div><div class="lv-sub">Answers come only from your documents, every claim cites '
-            'its source passage, and Levi explains what a document says without giving legal advice.</div>',
+st.markdown('<div class="lv-brand"><span class="name">⚖️ Levi</span><span class="tag">answers from your '
+            'contracts, with the receipts</span></div><div class="lv-sub">Ask anything about your documents. Every '
+            'answer shows the exact passage it came from, and Levi tells you when the answer isn\'t there.</div>',
             unsafe_allow_html=True)
 
 tab_ask, tab_eval, tab_how = st.tabs(["Ask", "Evaluation", "How it works"])
@@ -102,7 +102,7 @@ def render_answer(turn: dict, idx: int) -> None:
                 f'<details style="margin-top:6px"><summary style="font-size:.78rem;color:{INK_2};cursor:pointer">'
                 f'Full passage</summary><div class="lv-src-body" style="margin-top:6px">'
                 f'{highlight(c.get("text", ""), c.get("highlights", []))}</div></details></div>')
-        st.markdown('<div class="lv-card-title" style="margin-top:10px">Evidence</div>' + "".join(sources),
+        st.markdown('<div class="lv-card-title" style="margin-top:10px">Where this comes from</div>' + "".join(sources),
                     unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="lv-refusal">{esc(body.get("answer") or body.get("detail", ""))}</div>',
@@ -143,7 +143,7 @@ def guardrail_checks(b: dict) -> str:
 
 def render_inspector(turn: dict) -> None:
     b = turn["response"]
-    st.markdown(f'<div class="lv-card-title">Answer inspector</div><div class="lv-def" style="margin-bottom:8px">'
+    st.markdown(f'<div class="lv-card-title">How this answer was produced</div><div class="lv-def" style="margin-bottom:8px">'
                 f'“{esc(turn["question"])}”</div>', unsafe_allow_html=True)
     if "timings_ms" not in b:
         st.markdown(card("Request failed", f'<div class="lv-def">{esc(b.get("detail", "unknown error"))}</div>'),
@@ -159,10 +159,11 @@ def render_inspector(turn: dict) -> None:
                      stat("Claims", str(len(b.get("claims", []))), f'{len(b.get("citations", []))} sources') + "</div>"),
                 unsafe_allow_html=True)
     st.markdown(card("Guardrails", guardrail_checks(b)), unsafe_allow_html=True)
-    st.markdown(card("Retrieval confidence (top rerank score)",
-                     confidence_track(b.get("retrieval_confidence"), REFUSAL_THRESHOLD)), unsafe_allow_html=True)
-    st.markdown('<div class="lv-card-title">Where the time went</div>', unsafe_allow_html=True)
-    st.altair_chart(stage_timeline(timings), width="stretch")
+    with st.expander("Timing and retrieval details"):
+        st.markdown('<div class="lv-card-title">Where the time went</div>', unsafe_allow_html=True)
+        st.altair_chart(stage_timeline(timings), width="stretch")
+        st.markdown(card("Retrieval confidence (top rerank score)",
+                         confidence_track(b.get("retrieval_confidence"), REFUSAL_THRESHOLD)), unsafe_allow_html=True)
     if any(a["outcome"] != "ok" for a in attempts):
         rows = "".join(f'<li><span class="icon" style="color:{GOOD if a["outcome"] == "ok" else WARNING}">'
                        f'{"✓" if a["outcome"] == "ok" else "↻"}</span><span class="what">{esc(a["provider"].rsplit("/", 1)[-1])}'
@@ -181,8 +182,8 @@ with tab_ask:
         history = st.session_state["history"]
         if not history:
             st.markdown(card("Try asking", '<div class="lv-def">' + "<br>".join(esc(e) for e in EXAMPLES) +
-                             '<br><br>Ask something the document does not cover, or ask for advice, to see the '
-                             'refusal and advice guardrails.</div>'), unsafe_allow_html=True)
+                             '<br><br>Curious? Ask about something the contract never mentions, or ask whether '
+                             'you should sign, and watch how Levi handles it.</div>'), unsafe_allow_html=True)
         for i, turn in enumerate(history):
             with st.chat_message("user"):
                 st.write(turn["question"])
@@ -204,9 +205,9 @@ with tab_ask:
         if sel is not None and sel < len(st.session_state["history"]):
             render_inspector(st.session_state["history"][sel])
         else:
-            st.markdown(card("Answer inspector", '<div class="lv-def">Ask a question to see how the answer was '
-                             'produced: guardrail decisions, retrieval confidence against the refusal cut-off, and a '
-                             'timeline of every pipeline stage.</div>'), unsafe_allow_html=True)
+            st.markdown(card("How this answer was produced", '<div class="lv-def">Ask a question to see which '
+                             'checks it passed, which passages it used, and where the time went.</div>'),
+                        unsafe_allow_html=True)
 
 with tab_eval:
     eval_view.render()

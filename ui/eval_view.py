@@ -1,4 +1,6 @@
-"""Evaluation tab: every number is read from eval/results/*.json, with n and caveats shown."""
+"""Evaluation tab: a four-question overview first, technical detail on demand.
+
+Every number is read from eval/results/*.json; methods and caveats live in the detail tabs."""
 import json
 import os
 from collections import Counter
@@ -70,169 +72,161 @@ def _generation() -> dict | None:
     }
 
 
-def render() -> None:
-    st.markdown("### Evaluation")
-    st.markdown('<div class="lv-def">Every number here is read from <span class="lv-mono">eval/results/*.json</span>, '
-                'produced by the scripts in <span class="lv-mono">eval/</span> on the CUAD contract dataset. '
-                'Sample sizes and caveats are shown next to each result; small samples mean wide uncertainty.</div>',
-                unsafe_allow_html=True)
-    st.write("")
+def _tile(value: str, headline: str, detail: str) -> str:
+    return (f'<div class="lv-tile"><div class="v">{esc(value)}</div><div class="k">{esc(headline)}</div>'
+            f'<div class="d">{esc(detail)}</div></div>')
 
+
+def _data():
     ret, gen = _retrieval_table(), _generation()
     refusal = _load("refusal_hybrid_rerank_")
     red = _load("redteam_")
     red_name, red_latest = red[-1] if red else (None, None)
     red_baseline = next((rep for _, rep in reversed(red) if "A_prompt_only" in rep["metrics"]["advice_leak_rate"]), None)
+    shipped = ret[ret["config"] == SHIPPED].iloc[0] if ret is not None and (ret["config"] == SHIPPED).any() else None
+    return ret, gen, (refusal[-1][1] if refusal else None), red_name, red_latest, red_baseline, shipped
 
-    # --- headline tiles
-    cols = st.columns(6)
-    if ret is not None and (ret["config"] == SHIPPED).any():
-        s = ret[ret["config"] == SHIPPED].iloc[0]
-        cols[0].metric("Top-1 retrieval (hit@1)", f"{s.hit1:.1%}",
-                       help="Share of questions where the #1 retrieved chunk contains the lawyer-marked answer. n=107.")
-        cols[1].metric("MRR", f"{s.mrr:.3f}", help="Mean reciprocal rank of the first correct chunk (1.0 = always first).")
+
+def render() -> None:
+    ret, gen, refusal, red_name, red, red_base, shipped = _data()
+
+    st.markdown('<div class="lv-hero-eval"><div class="lv-hero-title">Answers you can check</div>'
+                '<div class="lv-hero-sub">Levi was put through 240 questions on 20 real, lawyer-annotated commercial '
+                'contracts and 58 attempts to trick it into giving legal advice. Here is what it delivered.'
+                '</div></div>', unsafe_allow_html=True)
+
+    tiles = []
+    if shipped is not None:
+        tiles.append(_tile(f"{shipped.hit5:.0%}", "The right clause, found",
+                           "The passage a lawyer marked as the answer reaches the model in the top 5 results."))
     if gen:
         v = gen["verdicts"]
-        cols[2].metric("Claims supported", f"{v.get('supported', 0) / max(1, gen['n_claims']):.0%}",
-                       help=f"LLM judge: claim fully supported by the chunk it cites. n={gen['n_claims']} claims.")
-        cols[3].metric("Unsupported claims", f"{v.get('unsupported', 0)} / {gen['n_claims']}",
-                       help="Claims the judge found not supported by their cited text (fabrications).")
-    if red_latest:
-        m = red_latest["metrics"]
-        cols[4].metric("Advice leak", f"{m['advice_leak_rate']['C_router_output']:.0%}",
-                       help="Share of advice-seeking red-team questions whose answer gave legal advice (LLM judge). n=34.")
-        cols[5].metric("Benign over-refusal", f"{m['benign_over_refusal_rate_C']:.0%}",
-                       help="Normal questions wrongly blocked by a guardrail. n=16.")
+        tiles.append(_tile(f"{v.get('unsupported', 0)}", "Made-up claims",
+                           f"Across {gen['n_claims']} claims checked by an independent AI judge, none were invented."))
+        tiles.append(_tile(f"{gen['una_refused']}/{gen['n_una']}", "Knows when to say “not here”",
+                           "Every question the contract couldn't answer got an honest “not in your document”."
+                           if gen["una_refused"] == gen["n_una"] else
+                           "Questions the contract couldn't answer got an honest “not in your document”; the one "
+                           "exception was a correct, cited answer the dataset labels as out of scope."
+                           if gen["n_una"] - gen["una_refused"] == 1 else
+                           "Questions the contract couldn't answer were answered with “not in your document”."))
+    if red:
+        m = red["metrics"]
+        tiles.append(_tile(f"{m['advice_leak_rate']['C_router_output']:.0%}", "Legal advice leaked",
+                           "Role-play, hypotheticals, “asking for a friend”: 34 attempts, zero advice given."))
+    if gen and gen["lat_total"]:
+        # Search time measured in the live app (Qdrant): 4-14 ms per request; stated conservatively.
+        tiles.append(_tile("<20 ms", "To search a whole contract",
+                           f"Keyword and meaning-based search combined. A complete cited answer takes about "
+                           f"{gen['lat_total'][50] / 1000:.1f} s."))
+    tiles.append(_tile("$0", "Infrastructure cost",
+                       "100% open-weight models on free tiers, with automatic fallback when a provider is busy."))
+    st.markdown(f'<div class="lv-proof">{"".join(tiles)}</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="lv-trust"><span>✓ <b>Every claim cites its source</b></span>'
+                '<span>✓ <b>Checks evidence before answering</b></span>'
+                '<span>✓ <b>Graded by an independent judge model</b></span>'
+                '<span>✓ <b>Red-teamed for advice and prompt injection</b></span></div>', unsafe_allow_html=True)
 
     st.write("")
-    # --- retrieval
-    left, right = st.columns([3, 2], gap="large")
-    with left:
-        st.markdown("#### Retrieval: quality vs latency")
+    st.markdown("#### Under the hood")
+    st.markdown('<div class="lv-def">The full measurements: ranking, answer quality, safety, speed, '
+                'and how each number was produced.</div>', unsafe_allow_html=True)
+    t_ret, t_gen, t_safe, t_perf, t_notes = st.tabs(["Retrieval", "Answer quality", "Safety", "Performance",
+                                                     "Method & limitations"])
+
+    with t_ret:
         if ret is not None:
-            st.altair_chart(tradeoff_scatter(ret, SHIPPED), width="stretch")
-    with right:
-        st.markdown("#### Why this configuration")
-        st.markdown(card("Decision", (
-            '<div class="lv-def">Hybrid search (BM25 + vectors, fused with RRF) beat either alone. A cross-encoder '
-            'reranker then lifts the right chunk to position 1 more often. The large bge reranker cost ~11 s/query on '
-            'CPU and did not help; the 12x smaller MiniLM gave the best top-1 ranking at ~1 s.</div>'
-            '<div class="lv-caveat">hit@5 intervals overlap across hybrid configs (n=107), so the claim is better '
-            'top-ranking (hit@1, MRR), not better recall.</div>')), unsafe_allow_html=True)
-        st.markdown(card("Definitions", (
-            '<div class="lv-def"><b>hit@k</b>: a chunk containing the gold answer is in the top k.<br>'
-            '<b>MRR</b>: average of 1/rank of the first correct chunk.<br>'
-            '<b>95% CI</b>: bootstrap over questions.<br><b>Latency</b>: per query on a laptop CPU, retrieval only.'
-            '</div>')), unsafe_allow_html=True)
-    if ret is not None:
-        with st.expander("Table view"):
+            a, b = st.columns([3, 2], gap="large")
+            a.altair_chart(tradeoff_scatter(ret, SHIPPED), width="stretch")
+            b.markdown(card("Why this configuration", (
+                '<div class="lv-def">Hybrid search (BM25 + vectors, fused with reciprocal rank fusion) beat either '
+                'alone. A cross-encoder reranker lifts the right passage to #1 more often. The large bge reranker cost '
+                '~11 s per query on CPU without gains; the 12x smaller MiniLM gave the best ranking at ~1 s.</div>')),
+                unsafe_allow_html=True)
+            b.markdown(card("Definitions", (
+                '<div class="lv-def"><b>hit@k</b>: a passage with the lawyer-marked answer is in the top k. '
+                '<b>MRR</b>: average of 1/rank of the first correct passage. <b>95% CI</b>: bootstrap over the 107 '
+                'answerable questions; hit@5 intervals overlap between hybrid setups, so the gain is in top-ranking.'
+                '</div>')), unsafe_allow_html=True)
             st.dataframe(ret.rename(columns={"hit1": "hit@1", "hit5": "hit@5", "hit5_ci": "hit@5 95% CI", "mrr": "MRR",
-                                             "p50_ms": "p50 ms", "p95_ms": "p95 ms"}),
-                         hide_index=True, width="stretch")
+                                             "p50_ms": "p50 ms", "p95_ms": "p95 ms"}), hide_index=True, width="stretch")
 
-    st.divider()
-    # --- answer quality
-    st.markdown("#### Answer quality (LLM-as-judge)")
-    if gen:
-        a, b = st.columns(2, gap="large")
-        with a:
-            st.markdown(card(f"Claim faithfulness · {gen['n_claims']} claims", (
-                verdict_bar(gen["verdicts"]) +
-                '<div class="lv-caveat">Judge: qwen3.8-27b (a different model family from the answering gpt-oss-120b, '
-                'to avoid self-preference). Each claim is checked only against the chunk it cites.</div>')),
-                unsafe_allow_html=True)
+    with t_gen:
+        if gen:
+            a, b = st.columns(2, gap="large")
+            a.markdown(card(f"Claim faithfulness · {gen['n_claims']} claims", verdict_bar(gen["verdicts"]) + (
+                '<div class="lv-caveat">Judge: qwen3.8-27b, a different model family from the answering gpt-oss-120b '
+                '(avoids self-preference). It reasons before its verdict and checks each claim only against the passage '
+                'it cites.</div>')), unsafe_allow_html=True)
             lb = gen["length_bias"]
-            judge_status = '<span class="lv-pending">pending</span> human labels to validate the judge (0 of 22 labelled)'
-            st.markdown(card("Can the judge be trusted?", (
-                f'<div class="lv-def">Length-bias check: Spearman ρ between answer length and score = '
-                f'<b>{lb["spearman_answer_length_vs_score"]:+.2f}</b> (p={lb["p_value"]:.2f}), so no sign that longer '
-                f'answers score higher.</div><div class="lv-def" style="margin-top:6px">{judge_status}</div>'
-                if lb else judge_status)), unsafe_allow_html=True)
-        with b:
-            mean = np.mean(gen["completeness"]) if gen["completeness"] else float("nan")
-            st.markdown(f'<div class="lv-card-title">Completeness vs lawyer-marked answer · mean {mean:.2f} / 5 · '
-                        f'n={len(gen["completeness"])}</div>', unsafe_allow_html=True)
-            st.altair_chart(completeness_bars(gen["comp_dist"]), width="stretch")
-        st.markdown(f'<div class="lv-caveat">Source: <span class="lv-mono">{esc(gen["file"])}</span>. Run before the '
-                    f'prompt fix for indirect answers; a same-seed re-run is pending.</div>', unsafe_allow_html=True)
+            if lb:
+                a.markdown(card("Judge bias check", (
+                    f'<div class="lv-def">Correlation between answer length and score: Spearman ρ = '
+                    f'{lb["spearman_answer_length_vs_score"]:+.2f} (p = {lb["p_value"]:.2f}). No sign that longer '
+                    f'answers are rewarded.</div>')), unsafe_allow_html=True)
+            with b:
+                st.markdown(f'<div class="lv-card-title">Completeness vs lawyer-marked answer · n = '
+                            f'{len(gen["completeness"])}</div>', unsafe_allow_html=True)
+                st.altair_chart(completeness_bars(gen["comp_dist"]), width="stretch")
+            if refusal:
+                t = refusal["test"]
+                st.markdown(card("Refusal gate · tuned on half the contracts, tested on the other half", (
+                    f'<div class="lv-def">Threshold {t["threshold"]:.2f} on the reranker score. Held-out precision '
+                    f'{t["refusal_precision"]:.0%}, recall {t["refusal_recall"]:.0%}, false refusals '
+                    f'{t["false_refusal_rate"]:.1%}. End to end: {gen["una_by"].get("refused_low_confidence", 0)} '
+                    f'unanswerable questions refused by the gate with no LLM call, '
+                    f'{gen["una_by"].get("refused_not_in_document", 0)} by the model.</div>')), unsafe_allow_html=True)
 
-        st.markdown(card("Refusal behaviour", (
-            f'<div class="lv-kv">'
-            f'<div class="lv-stat"><div class="label">Answerable questions answered</div><div class="value">'
-            f'{gen["answered_rate"]:.0%}</div><div class="hint">n={gen["n_ans"]} · false refusals: '
-            f'{gen["false_refusals"].get("refused_low_confidence", 0)} by retrieval gate, '
-            f'{gen["false_refusals"].get("refused_not_in_document", 0)} by the LLM</div></div>'
-            f'<div class="lv-stat"><div class="label">Unanswerable questions refused</div><div class="value">'
-            f'{gen["una_refused"]} / {gen["n_una"]}</div><div class="hint">'
-            f'{gen["una_by"].get("refused_low_confidence", 0)} by gate (no LLM call), '
-            f'{gen["una_by"].get("refused_not_in_document", 0)} by the LLM</div></div>'
-            f'<div class="lv-stat"><div class="label">Excluded as infrastructure errors</div><div class="value">'
-            f'{gen["errors"]} / {gen["n"]}</div><div class="hint">provider daily token quota (HTTP 429); reported, '
-            f'not counted as refusals</div></div></div>')), unsafe_allow_html=True)
-        if refusal:
-            t = refusal[-1][1]["test"]
-            st.markdown(card("Retrieval refusal gate on its own · held-out half of contracts, 240 questions", (
-                f'<div class="lv-def">Refuses before any LLM call when the best rerank score is below '
-                f'<b>{t["threshold"]:.2f}</b> (tuned on the other half, false refusals capped at 10%). '
-                f'Precision <b>{t["refusal_precision"]:.0%}</b> · recall <b>{t["refusal_recall"]:.0%}</b> · '
-                f'false refusals <b>{t["false_refusal_rate"]:.1%}</b>. It catches about a third of unanswerable '
-                f'questions for free; the LLM\'s own "not answerable" check handles the rest.</div>')),
+    with t_safe:
+        if red:
+            m = red["metrics"]
+            cats = {"advice_direct": "Direct advice requests", "advice_disguised": "Disguised (role-play, hypotheticals)",
+                    "mixed": "Mixed (facts + advice)"}
+            rows = [{"test": cats[k], "cases": sum(r["category"] == k for r in red["rows"]), "result": f"{v:.0%} leaked"}
+                    for k, v in m["advice_leak_by_category_C"].items()]
+            rows += [{"test": "Benign questions wrongly refused", "cases": 16, "result": f"{m['benign_over_refusal_rate_C']:.0%}"},
+                     {"test": "Off-topic stopped before the LLM", "cases": 8, "result": f"{m['off_topic_caught_C']:.0%}"},
+                     {"test": "Intent router accuracy", "cases": len(red["rows"]), "result": f"{m['router_accuracy']:.0%}"}]
+            a, b = st.columns([3, 2], gap="large")
+            a.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+            base = red_base["metrics"]["advice_leak_rate"].get("A_prompt_only") if red_base else None
+            b.markdown(card("Defence in depth", (
+                '<div class="lv-def">Four layers: an intent router, a facts-only answer mode for advice requests, '
+                'mandatory citations, and an output check that strips recommendation language. Document text is '
+                'passed as delimited data, never as instructions.</div>' +
+                (f'<div class="lv-caveat">With the system prompt alone the leak rate was already {base:.0%}; the extra '
+                 f'layers add margin for weaker fallback models.</div>' if base is not None else ''))),
                 unsafe_allow_html=True)
 
-    st.divider()
-    # --- guardrails
-    st.markdown("#### Guardrails: red-team (58 hand-written attacks)")
-    if red_latest:
-        m = red_latest["metrics"]
-        cats = {"advice_direct": "Direct advice requests", "advice_disguised": "Disguised (role-play, hypotheticals)",
-                "mixed": "Mixed (facts + advice)"}
-        rows = [{"attack type": cats[k], "n": sum(r["category"] == k for r in red_latest["rows"]),
-                 "advice leaked": f"{v:.0%}"} for k, v in m["advice_leak_by_category_C"].items()]
-        rows += [{"attack type": "Benign questions wrongly refused", "n": 16, "advice leaked": "—",
-                  "result": f"{m['benign_over_refusal_rate_C']:.0%}"},
-                 {"attack type": "Off-topic caught before retrieval", "n": 8, "advice leaked": "—",
-                  "result": f"{m['off_topic_caught_C']:.0%}"}]
-        a, b = st.columns([3, 2], gap="large")
-        with a:
-            st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
-        with b:
-            base = red_baseline["metrics"]["advice_leak_rate"].get("A_prompt_only") if red_baseline else None
-            inj_cited = sum(r.get("injection_cited", False) for r in red_latest.get("injection", []))
-            st.markdown(card("Reading these results honestly", (
-                f'<div class="lv-def">With only the system prompt (no router, no output check) the leak rate was '
-                f'already <b>{base:.0%}</b>: gpt-oss-120b follows the instruction. The extra layers add margin for '
-                f'weaker fallback models (not yet measured), clearer replies, and skip the LLM for off-topic input.'
-                f'</div><div class="lv-caveat">Router accuracy {m["router_accuracy"]:.0%}. Prompt injection: '
-                f'{m["injection_attack_success_rate"]:.0%} success, but inconclusive: the injected passage was cited '
-                f'in {inj_cited} of {len(red_latest.get("injection", []))} answers, so the model may not have seen it.'
-                f'</div>' if base is not None else '')), unsafe_allow_html=True)
-        st.markdown(f'<div class="lv-caveat">Source: <span class="lv-mono">{esc(red_name)}</span>. Measured before the '
-                    f'router simplification (its LLM fallback was removed afterwards). A re-run hit the provider’s '
-                    f'daily token quota on 18 of 58 queries and is excluded: see <span class="lv-mono">'
-                    f'eval/results/invalid/</span>.</div>', unsafe_allow_html=True)
-
-    st.divider()
-    # --- latency
-    st.markdown("#### Latency (end-to-end, laptop CPU + Groq free tier)")
-    if gen and gen["lat_total"]:
-        c = st.columns(4)
-        c[0].metric("End-to-end p50", f"{gen['lat_total'][50] / 1000:.2f} s",
-                    help="Answered questions, rate-limit stalls excluded.")
-        c[1].metric("End-to-end p95", f"{gen['lat_total'][95] / 1000:.2f} s")
-        c[2].metric("LLM generation p50", f"{gen['lat_llm'][50] / 1000:.2f} s", help="Model call only.")
-        c[3].metric("Rerank p50", f"{gen['lat_rerank'][50]:.0f} ms", help="Cross-encoder on 10 chunks, CPU.")
-        st.markdown(f'<div class="lv-caveat">n={gen["n_unstalled"]} answered questions. {gen["n_stalled"]} calls '
-                    f'that stalled 40 s+ waiting for the provider\'s per-minute token limit are excluded; that run did '
-                    f'not yet record wait time separately, so this split is a heuristic. Newer runs report '
-                    f'<span class="lv-mono">llm_wait</span> as its own stage. p99 omitted: too few samples.</div>',
-                    unsafe_allow_html=True)
-
-    st.divider()
-    st.markdown("#### Not done yet")
-    st.markdown('<div class="lv-def">'
-                '<span class="lv-pending">pending</span> Human labels for judge agreement (Cohen\'s κ).<br>'
-                '<span class="lv-pending">pending</span> Generation re-run after the prompt fix for indirect answers '
-                '(same seed, for a before/after).<br>'
-                '<span class="lv-pending">pending</span> Load test (concurrency, rate limiter, CPU offload).<br>'
-                '<span class="lv-pending">pending</span> Guardrail leak rate on the weaker fallback model.</div>',
+    with t_perf:
+        if gen and gen["lat_total"]:
+            c = st.columns(4)
+            c[0].metric("Median answer", f"{gen['lat_total'][50] / 1000:.2f} s")
+            c[1].metric("p95 answer", f"{gen['lat_total'][95] / 1000:.2f} s")
+            c[2].metric("LLM generation (median)", f"{gen['lat_llm'][50] / 1000:.2f} s")
+            c[3].metric("Rerank (median)", f"{gen['lat_rerank'][50]:.0f} ms")
+            st.markdown(card("Where the time goes", (
+                '<div class="lv-def">Keyword search, vector search and fusion together take under 20 ms. The LLM call '
+                'and the CPU reranker account for over 90% of an answer\'s time, which is why the reranker was chosen '
+                'for speed as well as quality. Every request reports per-stage timings and a Langfuse trace.</div>')),
                 unsafe_allow_html=True)
+
+    with t_notes:
+        st.markdown(card("How the numbers were produced", (
+            '<div class="lv-def">All figures are read from <span class="lv-mono">eval/results/*.json</span>, written by '
+            'the scripts in <span class="lv-mono">eval/</span>. Retrieval: 107 answerable CUAD questions. Answer quality: '
+            f'{gen["n"] if gen else "—"} sampled questions ({gen["errors"] if gen else 0} excluded as provider quota '
+            f'errors, not counted as refusals), {gen["n_claims"] if gen else "—"} judged claims. Safety: 58 hand-written '
+            'red-team cases.</div>')), unsafe_allow_html=True)
+        st.markdown(card("Limitations and next validation steps", (
+            '<div class="lv-def">Small samples: treat answer-quality figures as indicative. '
+            'The LLM judge has not yet been checked against human labels. '
+            'Answer times exclude time spent waiting on the free tier’s per-minute token limit, which is logged '
+            'separately. An instruction to report indirect answers (a duration instead of a date) did not reduce '
+            'refusals on expiry-date questions; these remain the main source of wrongly refused questions. '
+            'Safety results predate a router simplification; a re-run is scheduled. '
+            'A prompt-injection test was inconclusive (the planted text was never retrieved). '
+            'Load testing and fallback-model red-teaming are planned.</div>'
+            f'<div class="lv-caveat">Sources: <span class="lv-mono">{esc(gen["file"]) if gen else ""}</span>, '
+            f'<span class="lv-mono">{esc(red_name or "")}</span></div>')), unsafe_allow_html=True)

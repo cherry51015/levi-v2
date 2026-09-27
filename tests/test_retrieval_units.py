@@ -3,7 +3,7 @@ import pytest
 
 from eval.metrics import hit_at_k, ndcg_at_k, overlaps, reciprocal_rank
 from levi.ingest import chunk_document, from_text, normalize
-from levi.retrieval import BM25Index, rrf_fuse
+from levi.retrieval import BM25Index, merge_window, rrf_fuse
 
 
 def make_doc(n_words: int):
@@ -65,3 +65,11 @@ def test_metrics():
 def test_overlaps():
     assert overlaps(0, 10, [(5, 15)])
     assert not overlaps(0, 10, [(10, 20)])  # half-open intervals
+
+
+def test_merge_window_rebuilds_contiguous_text_without_repeats():
+    doc = make_doc(500)
+    chunks = chunk_document(doc, chunk_words=100, overlap=20)
+    merged = merge_window(chunks[1:4], overlap=20)
+    words = merged.split()
+    assert words == doc.text.split()[80:80 + len(words)]  # chunk 1 starts at word 80; no duplicated words

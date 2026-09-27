@@ -18,3 +18,9 @@ class ScoredChunk(BaseModel):
     # Cosine similarity to the query, kept even after fusion: RRF scores only encode
     # rank, so they can't tell "best of a bad lot" from a genuine match.
     dense_score: float | None = None
+    # Wider text around the chunk (itself plus neighbours) shown to the LLM; None = the chunk alone.
+    context: str | None = None
+
+    @property
+    def text_for_llm(self) -> str:
+        return self.context or self.chunk.text

@@ -21,10 +21,10 @@ import numpy as np
 INTENTS = ("informational", "advice", "off_topic")
 TRAIN_PATH = Path(__file__).parent / "data" / "intent_train.jsonl"
 
-ADVICE_NOTE = ("I can explain what your document says, but not what you should do. "
-               "For advice on your situation, please consult a qualified lawyer.")
-OFF_TOPIC_REPLY = ("I can only answer questions about the documents you've uploaded. "
-                   "Try asking about a clause, a date, a party's obligations, or a definition.")
+ADVICE_NOTE = ("I can tell you exactly what your document says, but not what you should do. "
+               "For a decision about your situation, a qualified lawyer is the right person to ask.")
+OFF_TOPIC_REPLY = ("I'm built to answer questions about your documents. Try asking about a clause, "
+                   "a deadline, a payment, or who is responsible for what.")
 
 
 class IntentRouter:

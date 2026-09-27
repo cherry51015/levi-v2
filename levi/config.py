@@ -19,12 +19,19 @@ class Settings:
     rerank_k: int = 10  # fused candidates handed to the cross-encoder
     rerank_max_length: int = 256  # tokens per (query, chunk) pair; cross-encoder cost grows with this
     final_k: int = 5  # chunks that reach the LLM
+    # Small-to-big: the top `context_expand_top` chunks are widened by `context_window` neighbouring chunks
+    # on each side before going to the LLM, so a clause isn't cut mid-sentence by the 200-word window.
+    # Limited to the top 3 to keep prompts inside the free tier's 8k tokens/minute.
+    context_window: int = int(os.getenv("LEVI_CONTEXT_WINDOW", "1"))
+    context_expand_top: int = int(os.getenv("LEVI_CONTEXT_EXPAND_TOP", "3"))
     rrf_k: int = 60  # RRF damping constant (value from the original RRF paper)
     retrieval_mode: str = os.getenv("LEVI_RETRIEVAL_MODE", "hybrid_rerank")
-    # Below this top rerank score (a raw logit) we refuse without calling the LLM. Tuned on half the
-    # CUAD contracts with false refusals capped at 10%; on the other half it refused 31.5% of
-    # unanswerable questions at 85% precision (eval/refusal_eval.py). Re-tune if the reranker changes.
-    refusal_threshold: float = float(os.getenv("LEVI_REFUSAL_THRESHOLD", "-7.49"))
+    # Below this top rerank score (a raw logit) we refuse without calling the LLM. The gate only filters
+    # clearly irrelevant questions; close calls go to the LLM, which refused every unanswerable question in
+    # the generation eval. Tuned on half the CUAD contracts with false refusals capped at 2%; on the other
+    # half: 90% precision, 4.3% false refusals, 23% of unanswerables caught for free (eval/refusal_eval.py).
+    # History: -7.49 with a 10% cap gave 85% precision but 8.5% false refusals. Re-tune if the reranker changes.
+    refusal_threshold: float = float(os.getenv("LEVI_REFUSAL_THRESHOLD", "-8.65"))
     # Run CPU-bound work (embedding, BM25, rerank) in a thread pool so it doesn't block the event loop.
     # A switch, not a constant, so the load test can measure the difference.
     offload_cpu: bool = os.getenv("LEVI_OFFLOAD_CPU", "1") == "1"

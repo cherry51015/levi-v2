@@ -103,9 +103,9 @@ class GroundedAnswer(BaseModel):
     llm_attempts: list[dict] = []
 
 
-REFUSAL_LOW_CONFIDENCE = ("I couldn't find anything in the document that answers this. "
-                          "Try rephrasing, or check that the right document is selected.")
-REFUSAL_NOT_IN_DOC = "The document excerpts I found don't answer this question."
+REFUSAL_LOW_CONFIDENCE = ("I couldn't find this in your document, so I won't guess. "
+                          "It may not be covered - try rephrasing, or check the right document is selected.")
+REFUSAL_NOT_IN_DOC = "Your document doesn't answer this one. I'd rather tell you that than make something up."
 
 
 def build_messages(question: str, chunks: list[ScoredChunk],
@@ -113,7 +113,7 @@ def build_messages(question: str, chunks: list[ScoredChunk],
     # Short ids ("c1") are easier for the model to copy exactly than long hashes.
     refs = {f"c{i}": sc for i, sc in enumerate(chunks, start=1)}
     excerpts = "\n".join(
-        f'<chunk id="{ref}" page="{sc.chunk.page or "-"}">\n{sc.chunk.text}\n</chunk>' for ref, sc in refs.items()
+        f'<chunk id="{ref}" page="{sc.chunk.page or "-"}">\n{sc.text_for_llm}\n</chunk>' for ref, sc in refs.items()
     )
     user = f"<document_excerpts>\n{excerpts}\n</document_excerpts>\n\n<question>\n{question}\n</question>"
     system = SYSTEM_PROMPT + (ADVICE_MODE_INSTRUCTION if advice_mode else "")
@@ -190,9 +190,9 @@ async def generate_answer(llm: LLMClient, question: str, chunks: list[ScoredChun
     used = dict.fromkeys(ref for c in claims for ref in c.citations)
     citations = []
     for ref in used:
-        chunk = refs[ref].chunk
-        snippet, highlights = evidence_snippet(chunk.text, [c.text for c in claims if ref in c.citations])
-        citations.append(Citation(ref=ref, chunk_id=chunk.id, page=chunk.page, snippet=snippet, text=chunk.text,
+        chunk, passage = refs[ref].chunk, refs[ref].text_for_llm  # the text the model actually saw
+        snippet, highlights = evidence_snippet(passage, [c.text for c in claims if ref in c.citations])
+        citations.append(Citation(ref=ref, chunk_id=chunk.id, page=chunk.page, snippet=snippet, text=passage,
                                   highlights=highlights, score=round(refs[ref].score, 3)))
     return GroundedAnswer(status="answered", answer=render(claims), claims=claims, citations=citations,
                           dropped_claims=dropped, advice_claims_removed=advice_removed,

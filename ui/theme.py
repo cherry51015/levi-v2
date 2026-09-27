@@ -78,6 +78,43 @@ h1, h2, h3 {{ letter-spacing: -0.01em; }}
 .lv-seg {{ display:flex; height:14px; border-radius:7px; overflow:hidden; gap:2px; background:transparent; margin:8px 0; }}
 .lv-legend {{ display:flex; gap:14px; flex-wrap:wrap; font-size:.8rem; color:var(--ink2); }}
 
+.lv-hero-eval {{ padding:6px 0 18px 0; }}
+.lv-proof {{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:14px; margin-bottom:16px; }}
+@media (max-width: 900px) {{ .lv-proof {{ grid-template-columns:repeat(2, minmax(0,1fr)); }} }}
+.lv-tile {{ position:relative; background:var(--surface); border:1px solid rgba(11,11,11,.10); border-radius:14px;
+            padding:18px 20px; overflow:hidden; }}
+.lv-tile::before {{ content:""; position:absolute; left:0; top:0; right:0; height:3px; background:linear-gradient(90deg,{ACCENT},#86b6ef); }}
+.lv-tile .v {{ font-size:2.4rem; font-weight:750; color:var(--ink); letter-spacing:-0.03em; line-height:1.05; }}
+.lv-tile .k {{ font-size:.95rem; font-weight:650; color:var(--ink); margin-top:6px; }}
+.lv-tile .d {{ font-size:.82rem; color:var(--ink2); margin-top:4px; line-height:1.45; }}
+.lv-trust {{ display:flex; gap:18px; flex-wrap:wrap; color:var(--ink2); font-size:.85rem; margin:4px 0 22px 0; }}
+.lv-trust b {{ color:var(--ink); }}
+.lv-hero-title {{ font-size:1.7rem; font-weight:700; color:var(--ink); letter-spacing:-0.02em; }}
+.lv-hero-sub {{ color:var(--ink2); font-size:.95rem; margin-top:4px; }}
+.lv-hero-sub b {{ color:var(--ink); font-weight:600; }}
+
+.lv-q {{ position:relative; background:var(--surface); border:1px solid rgba(11,11,11,.10); border-radius:14px;
+         padding:20px 22px 18px 22px; margin-bottom:16px; overflow:hidden; }}
+.lv-q::before {{ content:""; position:absolute; left:0; top:0; right:0; height:3px; background:linear-gradient(90deg,{ACCENT},#86b6ef); }}
+.lv-q-num {{ font-size:.75rem; font-weight:700; color:{ACCENT}; letter-spacing:.08em; }}
+.lv-q-title {{ font-size:1.12rem; font-weight:650; color:var(--ink); margin:2px 0 14px 0; }}
+.lv-bigrow {{ display:flex; gap:28px; flex-wrap:wrap; }}
+.lv-big .v {{ font-size:2.1rem; font-weight:700; color:var(--ink); line-height:1.05; letter-spacing:-0.02em; }}
+.lv-big .l {{ font-size:.8rem; color:var(--ink2); margin-top:4px; }}
+.lv-big .h {{ font-size:.74rem; color:{GOOD_TEXT}; font-weight:600; margin-top:2px; }}
+.lv-q-take {{ font-size:.84rem; color:var(--ink2); margin-top:14px; padding-top:12px; border-top:1px solid var(--hair); }}
+.lv-status {{ display:flex; gap:10px; flex-wrap:wrap; margin:2px 0 6px 0; }}
+.lv-status span {{ font-size:.8rem; color:{GOOD_TEXT}; background:#eef7ee; border:1px solid #cfe8cf; border-radius:999px; padding:3px 11px; font-weight:600; }}
+
+.lv-steps {{ display:flex; gap:10px; align-items:stretch; flex-wrap:wrap; margin:8px 0 18px 0; }}
+.lv-step {{ flex:1 1 150px; background:var(--surface); border:1px solid rgba(11,11,11,.10); border-radius:12px; padding:16px; position:relative; }}
+.lv-step .n {{ width:26px; height:26px; border-radius:50%; background:{ACCENT}; color:#fff; font-weight:700; font-size:.8rem;
+               display:flex; align-items:center; justify-content:center; margin-bottom:10px; }}
+.lv-step .t {{ font-weight:650; color:var(--ink); font-size:.95rem; margin-bottom:4px; }}
+.lv-step .d {{ color:var(--ink2); font-size:.82rem; line-height:1.45; }}
+.lv-step .u {{ color:var(--muted); font-size:.74rem; margin-top:8px; font-family:ui-monospace,Consolas,monospace; }}
+.lv-arrow {{ align-self:center; color:#c3c2b7; font-size:1.2rem; }}
+
 [data-testid="stMetric"] {{ background:var(--surface); border:1px solid rgba(11,11,11,.10); border-radius:10px; padding:12px 14px; }}
 [data-testid="stMetricLabel"] p {{ font-size:.78rem !important; color:{INK_2}; }}
 [data-testid="stMetricValue"] {{ font-size:1.6rem !important; }}
@@ -88,22 +125,23 @@ h1, h2, h3 {{ letter-spacing: -0.01em; }}
 
 # status -> (label, colour, icon). Colour never carries meaning alone: icon + label always shown.
 STATUS = {
-    "answered": ("Answered from document", GOOD, "✓"),
-    "refused_low_confidence": ("Not found in document", MUTED, "∅"),
-    "refused_not_in_document": ("Not found in document", MUTED, "∅"),
-    "refused_advice": ("Advice declined", WARNING, "!"),
-    "off_topic": ("Outside scope", MUTED, "↷"),
-    "error": ("Service unavailable", CRITICAL, "✕"),
+    "answered": ("Answered with sources", GOOD, "✓"),
+    "refused_low_confidence": ("Not in your document", MUTED, "∅"),
+    "refused_not_in_document": ("Not in your document", MUTED, "∅"),
+    "refused_advice": ("Facts only, no advice", WARNING, "!"),
+    "off_topic": ("Outside Levi's scope", MUTED, "↷"),
+    "error": ("Temporarily unavailable", CRITICAL, "✕"),
 }
 
 STAGE_NAMES = {
     "embed_query": "Embed query", "route": "Intent router", "bm25": "BM25 keyword search",
     "dense": "Vector search", "fusion": "RRF fusion", "rerank": "Cross-encoder rerank",
+    "expand_context": "Expand context",
     "llm_wait": "Rate-limit wait", "llm": "LLM generation", "llm_repair": "LLM JSON repair",
     "validate": "Validate JSON", "output_check": "Advice check",
 }
 # Execution order (the timings dict records llm_wait after llm, but the wait happens first).
-STAGE_ORDER = ["embed_query", "route", "bm25", "dense", "fusion", "rerank",
+STAGE_ORDER = ["embed_query", "route", "bm25", "dense", "fusion", "rerank", "expand_context",
                "llm_wait", "llm", "validate", "llm_repair", "output_check"]
 
 

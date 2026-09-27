@@ -1,0 +1,1711 @@
+{
+  "rows": [
+    {
+      "qid": "cuad_011:Governing Law",
+      "answerable": true,
+      "category": "Governing Law",
+      "question": "Which state/country's law governs the interpretation of the contract?",
+      "status": "answered",
+      "answer": "The contract is governed by the law of the People's Republic of China (and otherwise by the United Nations Convention on Contracts for the International Sale of Goods). [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2109.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 173.3,
+        "route": 1.6,
+        "bm25": 6.9,
+        "dense": 7.0,
+        "fusion": 0.1,
+        "rerank": 621.4,
+        "expand_context": 0.4,
+        "llm": 2108.8,
+        "validate": 0.2,
+        "output_check": 0.1
+      },
+      "total_ms": 2919.8,
+      "claims": [
+        {
+          "text": "The contract is governed by the law of the People's Republic of China (and otherwise by the United Nations Convention on Contracts for the International Sale of Goods).",
+          "verdict": "supported",
+          "reasoning": "The source text in clause 21 explicitly states that the contract 'will be governed by the law of the People's Republic of China, otherwise it is governed by United Nations Convention on Contract for the International Sale of Goods,' which directly supports the claim."
+        }
+      ],
+      "completeness": 5,
+      "completeness_reasoning": "The answer correctly identifies the governing law as the People's Republic of China and includes the fallback provision regarding the United Nations Convention on Contracts for the International Sale of Goods, matching all key points of the reference."
+    },
+    {
+      "qid": "cuad_014:Governing Law",
+      "answerable": true,
+      "category": "Governing Law",
+      "question": "Which state/country's law governs the interpretation of the contract?",
+      "status": "answered",
+      "answer": "The contract is governed by the laws of the State of Delaware [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 937.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 112.9,
+        "route": 0.7,
+        "bm25": 28.2,
+        "dense": 2.2,
+        "fusion": 0.1,
+        "rerank": 640.3,
+        "expand_context": 0.5,
+        "llm": 943.9,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 1728.9,
+      "claims": [
+        {
+          "text": "The contract is governed by the laws of the State of Delaware",
+          "verdict": "supported",
+          "reasoning": "Section 15.7 of the source text explicitly states that the Agreement 'shall be governed by, and construed and interpreted in accordance with, the laws of the State of Delaware'."
+        }
+      ],
+      "completeness": 4,
+      "completeness_reasoning": "The answer correctly identifies the State of Delaware as the governing law, which is the core fact in the reference answer. It omits the specific detail about excluding conflicts of laws principles, but captures the main point."
+    },
+    {
+      "qid": "cuad_012:Non-Compete",
+      "answerable": true,
+      "category": "Non-Compete",
+      "question": "Is there a restriction on the ability of a party to compete with the counterparty or operate in a certain geography or business or technology sector?",
+      "status": "refused_low_confidence",
+      "answer": "I couldn't find this in your document, so I won't guess. It may not be covered - try rephrasing, or check the right document is selected.",
+      "provider": null,
+      "llm_attempts": [],
+      "timings_ms": {
+        "embed_query": 235.5,
+        "route": 0.6,
+        "bm25": 32.2,
+        "dense": 0.5,
+        "fusion": 0.1,
+        "rerank": 611.9
+      },
+      "total_ms": 880.9,
+      "claims": []
+    },
+    {
+      "qid": "cuad_013:Anti-Assignment",
+      "answerable": true,
+      "category": "Anti-Assignment",
+      "question": "Is consent or notice required of a party if the contract is assigned to a third party?",
+      "status": "answered",
+      "answer": "Assignment to a third party generally requires the other party's prior written consent, although a party may assign the whole agreement to an affiliate or in connection with a transfer of substantially all its stock or assets by giving written notice to the other party. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1984.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 99.3,
+        "route": 0.6,
+        "bm25": 15.4,
+        "dense": 0.3,
+        "fusion": 0.1,
+        "rerank": 597.3,
+        "expand_context": 0.4,
+        "llm": 1997.0,
+        "llm_wait": 37807.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 40517.6,
+      "claims": [
+        {
+          "text": "Assignment to a third party generally requires the other party's prior written consent, although a party may assign the whole agreement to an affiliate or in connection with a transfer of substantially all its stock or assets by giving written notice to the other party.",
+          "verdict": "supported",
+          "reasoning": "The source text in Clause 18.4 explicitly states that the agreement may not be assigned without prior written consent, except that a party may assign the whole agreement to an Affiliate or in case of a transfer of all or substantially all stock or assets upon written notice to the other party. The claim accurately reflects these conditions and exceptions."
+        }
+      ],
+      "completeness": 5,
+      "completeness_reasoning": "The answer correctly identifies the general rule requiring prior written consent and the specific exceptions (assignment to an affiliate or in connection with a transfer of substantially all stock/assets) where only written notice is required. It captures all key points from the reference text accurately and concisely."
+    },
+    {
+      "qid": "cuad_015:Insurance",
+      "answerable": true,
+      "category": "Insurance",
+      "question": "Is there a requirement for insurance that must be maintained by one party for the benefit of the counterparty?",
+      "status": "answered",
+      "answer": "Vendor is required to maintain commercial general liability insurance with at least $1 million per occurrence limits, and Subaru of America, Inc., its parent and subsidiaries (i.e., the counterparty) must be named as additional insureds under that policy. [c1, c2]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1312.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 139.7,
+        "route": 0.6,
+        "bm25": 4.4,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 575.8,
+        "expand_context": 0.5,
+        "llm": 1310.1,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 2031.5,
+      "claims": [
+        {
+          "text": "Vendor is required to maintain commercial general liability insurance with at least $1 million per occurrence limits, and Subaru of America, Inc., its parent and subsidiaries (i.e., the counterparty) must be named as additional insureds under that policy.",
+          "verdict": "supported",
+          "reasoning": "The source text explicitly states that the Vendor shall maintain CGL insurance with a limit of not less than $1 million each occurrence and that Subaru of America, Inc., its parent, and subsidiaries shall be included as additional insureds. The claim accurately reflects these requirements, and the identification of Subaru as the counterparty is supported by the context of the agreement (e.g., Section 7 mentions Torvec promoting its products, but the insurance clause specifically names Subaru as the additional insured, implying Subaru is the relevant party for that specific coverage requirement, likely due to a relationship not fully detailed in the snippet but the text explicitly names them as the required additional insureds)."
+        }
+      ],
+      "completeness": 4,
+      "completeness_reasoning": "The answer correctly identifies the core requirement (Vendor maintaining CGL insurance for the benefit of Subaru) and includes the specific limit ($1 million) and the specific parties to be named as additional insureds. It misses the specific ISO form numbers and the A.M. Best rating requirement, but covers the main point and key facts regarding the parties and coverage type."
+    },
+    {
+      "qid": "cuad_017:Expiration Date",
+      "answerable": true,
+      "category": "Expiration Date",
+      "question": "On what date will the contract's initial term expire?",
+      "status": "answered",
+      "answer": "The contract's initial term expires on October 31, 2012. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1516.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 90.2,
+        "route": 0.6,
+        "bm25": 3.8,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 551.6,
+        "expand_context": 0.4,
+        "llm": 1525.4,
+        "llm_wait": 39259.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 41431.3,
+      "claims": [
+        {
+          "text": "The contract's initial term expires on October 31, 2012.",
+          "verdict": "supported",
+          "reasoning": "The source text in section 12.1 explicitly states that the contract \"shall remain in force and effect... until October 31, 2012,\" which directly supports the claim regarding the expiration date of the initial term."
+        }
+      ],
+      "completeness": 5,
+      "completeness_reasoning": "The answer correctly identifies the expiration date (October 31, 2012) as stated in the reference text. It omits the start date, but the question specifically asked for the expiration date, so the core requirement is met."
+    },
+    {
+      "qid": "cuad_018:Non-Compete",
+      "answerable": true,
+      "category": "Non-Compete",
+      "question": "Is there a restriction on the ability of a party to compete with the counterparty or operate in a certain geography or business or technology sector?",
+      "status": "answered",
+      "answer": "The agreement restricts a party from being involved in any \"Competitive Business,\" defined as any business within the Included Markets that manufactures, sells, markets or distributes any non‑selective weed control product for Lawn and Garden use or otherwise competes with the Roundup L&G Business, unless certain exceptions apply (e.g., actions expressly contemplated by the agreement, continuation after termination, or ownership interest of 5% or less). [c4] The agreement also defines \"Excluded Markets\" that a party may not operate in, which include any country subject to a comprehensive U.S. trade embargo, countries subject to other relevant embargos or trade restrictions that would materially impact performance, and other specifically excluded countries, and these exclusions may be modified over time. [c3]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1375.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 133.0,
+        "route": 0.7,
+        "bm25": 45.2,
+        "dense": 0.8,
+        "fusion": 0.1,
+        "rerank": 578.2,
+        "expand_context": 0.5,
+        "llm": 1375.8,
+        "validate": 0.1,
+        "output_check": 0.1
+      },
+      "total_ms": 2134.4,
+      "claims": [
+        {
+          "text": "The agreement restricts a party from being involved in any \"Competitive Business,\" defined as any business within the Included Markets that manufactures, sells, markets or distributes any non‑selective weed control product for Lawn and Garden use or otherwise competes with the Roundup L&G Business, unless certain exceptions apply (e.g., actions expressly contemplated by the agreement, continuation after termination, or ownership interest of 5% or less).",
+          "verdict": "supported",
+          "reasoning": "The claim accurately summarizes the definition of 'Competitive Business' and the three specific exceptions listed in the source text (expressly contemplated actions, continuation after termination, and ownership interest of 5% or less)."
+        },
+        {
+          "text": "The agreement also defines \"Excluded Markets\" that a party may not operate in, which include any country subject to a comprehensive U.S. trade embargo, countries subject to other relevant embargos or trade restrictions that would materially impact performance, and other specifically excluded countries, and these exclusions may be modified over time.",
+          "verdict": "supported",
+          "reasoning": "The source text explicitly defines 'Excluded Markets' to include countries under comprehensive U.S. trade embargoes, countries under other embargoes/restrictions that materially impact duties, and other expressly excluded countries. It also states that these markets may be modified from time to time, which aligns with the claim's assertion that exclusions may be modified over time."
+        }
+      ],
+      "completeness": 3,
+      "completeness_reasoning": "The answer correctly identifies the core non-compete restriction regarding 'Competitive Business' and the definition involving non-selective weed control products and the Roundup L&G Business. It also captures the key exceptions (expressly contemplated actions, 5% ownership). However, it misses the specific restrictions on the 'Agent' (which includes Permitted Products and transgenic technology sharing exceptions) and the specific provisions regarding pre-launch activities (non-commercial activities 3 years prior, retail engagement 12 months prior). It also introduces 'Excluded Markets' which, while potentially relevant to geography, is not the primary focus of the reference text which focuses on the non-compete covenant itself. The core idea is present but important details about the Agent's specific exceptions and the pre-launch timeline are missing."
+    },
+    {
+      "qid": "cuad_019:Expiration Date",
+      "answerable": true,
+      "category": "Expiration Date",
+      "question": "On what date will the contract's initial term expire?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1719.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 94.8,
+        "route": 0.6,
+        "bm25": 14.7,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 549.0,
+        "expand_context": 0.4,
+        "llm": 1730.7,
+        "llm_wait": 41906.0,
+        "validate": 0.0,
+        "output_check": 0.0
+      },
+      "total_ms": 44296.6,
+      "claims": []
+    },
+    {
+      "qid": "cuad_012:Audit Rights",
+      "answerable": true,
+      "category": "Audit Rights",
+      "question": "Does a party have the right to  audit the books, records, or physical locations of the counterparty to ensure compliance with the contract?",
+      "status": "answered",
+      "answer": "The franchisor reserves the right to inspect or examine the franchisee’s accounts, books, records and tax returns at any reasonable time, with or without prior notice. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1547.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 116.0,
+        "route": 0.6,
+        "bm25": 2.3,
+        "dense": 0.5,
+        "fusion": 0.1,
+        "rerank": 569.5,
+        "expand_context": 0.5,
+        "llm": 1559.8,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 2249.5,
+      "claims": [
+        {
+          "text": "The franchisor reserves the right to inspect or examine the franchisee’s accounts, books, records and tax returns at any reasonable time, with or without prior notice.",
+          "verdict": "supported",
+          "reasoning": "The source text explicitly states, 'we reserve the right to inspect or examine your accounts, books, records and tax returns, at any reasonable time, with or without prior notice to you,' which directly supports the claim."
+        }
+      ],
+      "completeness": 4,
+      "completeness_reasoning": "The answer correctly identifies the specific right to inspect accounts, books, records, and tax returns, including the conditions of 'any reasonable time' and 'with or without prior notice,' which matches the second bullet point of the reference answer. It misses the other two points regarding physical inspection of the business/units and quality control inspections of products, but it accurately covers the core aspect of auditing books and records asked in the question."
+    },
+    {
+      "qid": "cuad_012:Expiration Date",
+      "answerable": true,
+      "category": "Expiration Date",
+      "question": "On what date will the contract's initial term expire?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1812.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 100.8,
+        "route": 0.7,
+        "bm25": 1.3,
+        "dense": 0.6,
+        "fusion": 0.1,
+        "rerank": 573.8,
+        "expand_context": 0.5,
+        "llm": 1816.5,
+        "llm_wait": 38197.0,
+        "validate": 0.0,
+        "output_check": 0.0
+      },
+      "total_ms": 40691.3,
+      "claims": []
+    },
+    {
+      "qid": "cuad_002:Cap On Liability",
+      "answerable": true,
+      "category": "Cap On Liability",
+      "question": "Does the contract include a cap on liability upon the breach of a party’s obligation? This includes time limitation for the counterparty to bring claims or maximum amount for recovery.",
+      "status": "answered",
+      "answer": "The agreement limits each party's liability to the amount of fees paid under the contract, so liability is capped at that amount. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1062.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 136.9,
+        "route": 0.6,
+        "bm25": 6.2,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 543.4,
+        "expand_context": 0.4,
+        "llm": 1064.0,
+        "validate": 0.1,
+        "output_check": 0.1
+      },
+      "total_ms": 1751.9,
+      "claims": [
+        {
+          "text": "The agreement limits each party's liability to the amount of fees paid under the contract, so liability is capped at that amount.",
+          "verdict": "supported",
+          "reasoning": "The source text in Section 7(a) explicitly states that the Contractor's maximum liability is limited to the amount of fees paid for the performance of services, and the Company's maximum liability is also limited to the amount of fees paid to the Contractor. This directly supports the claim that liability is capped at that amount for both parties."
+        }
+      ],
+      "completeness": 3,
+      "completeness_reasoning": "The answer correctly identifies the core concept of a liability cap based on fees paid, which is the main point of the reference. However, it misses the specific exclusion for Paragraph 9 obligations and the exclusion of consequential/indirect damages, which are significant details in the reference text."
+    },
+    {
+      "qid": "cuad_010:Expiration Date",
+      "answerable": true,
+      "category": "Expiration Date",
+      "question": "On what date will the contract's initial term expire?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1531.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 104.2,
+        "route": 0.6,
+        "bm25": 1.2,
+        "dense": 0.5,
+        "fusion": 0.0,
+        "rerank": 200.7,
+        "expand_context": 0.3,
+        "llm": 1534.7,
+        "llm_wait": 42212.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 44054.3,
+      "claims": []
+    },
+    {
+      "qid": "cuad_003:Anti-Assignment",
+      "answerable": true,
+      "category": "Anti-Assignment",
+      "question": "Is consent or notice required of a party if the contract is assigned to a third party?",
+      "status": "answered",
+      "answer": "The agreement may not be assigned by any party without the prior written consent of each of the other parties; any attempted assignment without consent is null and void. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2282.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 97.0,
+        "route": 0.6,
+        "bm25": 6.3,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 555.9,
+        "expand_context": 0.4,
+        "llm": 2280.3,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 2941.0,
+      "claims": [
+        {
+          "text": "The agreement may not be assigned by any party without the prior written consent of each of the other parties; any attempted assignment without consent is null and void.",
+          "verdict": "supported",
+          "reasoning": "The source text in Section 22 explicitly states that the agreement may not be assigned without prior written consent of the other parties and that any attempted assignment in violation of this section is null and void."
+        }
+      ],
+      "completeness": 5,
+      "completeness_reasoning": "The answer correctly identifies that prior written consent is required from all other parties and that unauthorized assignments are null and void. It captures the core legal requirements and consequences stated in the reference, omitting only the minor detail about 'operation of law' which does not change the practical requirement for consent."
+    },
+    {
+      "qid": "cuad_009:Notice Period To Terminate Renewal",
+      "answerable": true,
+      "category": "Notice Period To Terminate Renewal",
+      "question": "What is the notice period required to terminate renewal?",
+      "status": "answered",
+      "answer": "Notice must be given at least fifteen (15) days before the end of the respective initial or renewal term to avoid renewal. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2015.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 136.3,
+        "route": 0.6,
+        "bm25": 4.4,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 575.2,
+        "expand_context": 0.4,
+        "llm": 2007.9,
+        "llm_wait": 35487.0,
+        "validate": 0.1,
+        "output_check": 0.1
+      },
+      "total_ms": 38212.1,
+      "claims": [
+        {
+          "text": "Notice must be given at least fifteen (15) days before the end of the respective initial or renewal term to avoid renewal.",
+          "verdict": "supported",
+          "reasoning": "The source text explicitly states that notice of intention not to renew 'must be given not less than fifteen (15) days before the end of the respective initial or renewal term,' which directly supports the claim."
+        }
+      ],
+      "completeness": 4,
+      "completeness_reasoning": "The answer correctly identifies the specific notice period (15 days) and the timing relative to the end of the term, which are the key facts in the reference answer. It omits the detail about who gives notice (Customer or i-on) and the automatic renewal mechanism, but captures the core requirement asked in the question."
+    },
+    {
+      "qid": "cuad_006:Anti-Assignment",
+      "answerable": true,
+      "category": "Anti-Assignment",
+      "question": "Is consent or notice required of a party if the contract is assigned to a third party?",
+      "status": "answered",
+      "answer": "The Sender may not assign the contract, in whole or in part, without the prior written consent of ECOPETROL, and any assignee must assume all rights and obligations under the contract. [c1] ECOPETROL, however, may assign the contract without the Sender’s authorization. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1266.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 150.7,
+        "route": 0.6,
+        "bm25": 48.4,
+        "dense": 0.8,
+        "fusion": 0.1,
+        "rerank": 618.4,
+        "expand_context": 0.5,
+        "llm": 1274.4,
+        "validate": 0.2,
+        "output_check": 0.1
+      },
+      "total_ms": 2094.2,
+      "claims": [
+        {
+          "text": "The Sender may not assign the contract, in whole or in part, without the prior written consent of ECOPETROL, and any assignee must assume all rights and obligations under the contract.",
+          "verdict": "supported",
+          "reasoning": "The source text in Clause 19.1 explicitly states that the SENDER shall not assign the contract totally or partially without previous written consent from ECOPETROL. Clause 19.2 states that the assignee shall assume all rights and obligations in the same terms established in the contract. The claim accurately reflects these two provisions."
+        },
+        {
+          "text": "ECOPETROL, however, may assign the contract without the Sender’s authorization.",
+          "verdict": "supported",
+          "reasoning": "The source text in Clause 19.4 explicitly states that 'ECOPETROL may assign the Contract without the authorization from the SENDER,' which directly supports the claim."
+        }
+      ],
+      "completeness": 3,
+      "completeness_reasoning": "The answer correctly identifies that the Sender requires ECOPETROL's prior written consent to assign the contract, which is the core requirement asked in the question. However, it misses the specific conditions under which ECOPETROL may authorize the assignment (financial capacity, bond, etc.) and the consequence of unauthorized assignment (termination), which are key parts of the reference text. It also adds a claim about ECOPETROL's ability to assign without authorization, which is not in the reference text provided."
+    },
+    {
+      "qid": "cuad_006:Governing Law",
+      "answerable": true,
+      "category": "Governing Law",
+      "question": "Which state/country's law governs the interpretation of the contract?",
+      "status": "answered",
+      "answer": "The contract is governed by Colombian law for its interpretation, as the document refers to Colombian legislation and codes such as the Colombian Code of Commerce and Law 80 of 1993. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1891.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 166.5,
+        "route": 0.6,
+        "bm25": 1.7,
+        "dense": 0.6,
+        "fusion": 0.1,
+        "rerank": 630.5,
+        "expand_context": 0.4,
+        "llm": 1894.5,
+        "llm_wait": 38086.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 40781.0,
+      "claims": [
+        {
+          "text": "The contract is governed by Colombian law for its interpretation, as the document refers to Colombian legislation and codes such as the Colombian Code of Commerce and Law 80 of 1993.",
+          "verdict": "supported",
+          "reasoning": "The source text explicitly cites 'Colombian legislation', 'article 1078 of the code of commerce', 'article 1081 of the code of commerce', and 'Law 80 of 1993' in the context of governing bankruptcy, time bars, and dispute resolution. It also mentions Ecopetrol is incorporated under the laws of the Republic of Colombia. Therefore, the claim that the contract is governed by Colombian law for interpretation is supported by the text."
+        }
+      ],
+      "completeness": 5,
+      "completeness_reasoning": "The answer correctly identifies Colombian law as the governing law, which is the core point of the reference. It adds specific details (Code of Commerce, Law 80) not in the reference snippet but consistent with the general statement that the contract is governed by the regulations of the Republic of Colombia."
+    },
+    {
+      "qid": "cuad_012:Exclusivity",
+      "answerable": true,
+      "category": "Exclusivity",
+      "question": "Is there an exclusive dealing  commitment with the counterparty? This includes a commitment to procure all “requirements” from one party of certain technology, goods, or services or a prohibition on licensing or selling technology, goods or services to third parties, or a prohibition on  collaborating or working with other parties), whether during the contract or  after the contract ends (or both).",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1078.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 209.2,
+        "route": 0.7,
+        "bm25": 5.6,
+        "dense": 0.5,
+        "fusion": 0.1,
+        "rerank": 579.0,
+        "expand_context": 0.4,
+        "llm": 1077.3,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 1872.8,
+      "claims": []
+    },
+    {
+      "qid": "cuad_017:Anti-Assignment",
+      "answerable": true,
+      "category": "Anti-Assignment",
+      "question": "Is consent or notice required of a party if the contract is assigned to a third party?",
+      "status": "answered",
+      "answer": "The agreement permits a party to assign its rights to another company without needing the other party’s consent or providing notice, subject to the restrictions that the Shipper may only assign in accordance with the General Terms and Conditions and may not assign otherwise. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2328.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 167.7,
+        "route": 0.6,
+        "bm25": 0.7,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 596.2,
+        "expand_context": 0.4,
+        "llm": 2356.9,
+        "llm_wait": 42599.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 45721.9,
+      "claims": [
+        {
+          "text": "The agreement permits a party to assign its rights to another company without needing the other party’s consent or providing notice, subject to the restrictions that the Shipper may only assign in accordance with the General Terms and Conditions and may not assign otherwise.",
+          "verdict": "partial",
+          "reasoning": "The source text in Section 14.1 states that a party may assign rights to an affiliated company 'without relieving itself of its obligation,' but it does not explicitly state that such assignment can be done 'without needing the other party’s consent or providing notice.' The text only specifies that the Shipper cannot assign otherwise except in accordance with the General Terms and Conditions. The claim adds the specific condition of no consent/notice required, which is not supported by the provided text."
+        }
+      ],
+      "completeness": 5,
+      "completeness_reasoning": "The answer correctly identifies that assignment is restricted to specific conditions (General Terms and Conditions) and implies that no general consent or notice is required outside of those specific provisions, which aligns with the reference text's limitation on assignment."
+    },
+    {
+      "qid": "cuad_001:Insurance",
+      "answerable": true,
+      "category": "Insurance",
+      "question": "Is there a requirement for insurance that must be maintained by one party for the benefit of the counterparty?",
+      "status": "refused_low_confidence",
+      "answer": "I couldn't find this in your document, so I won't guess. It may not be covered - try rephrasing, or check the right document is selected.",
+      "provider": null,
+      "llm_attempts": [],
+      "timings_ms": {
+        "embed_query": 108.4,
+        "route": 0.6,
+        "bm25": 9.2,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 558.7
+      },
+      "total_ms": 677.1,
+      "claims": []
+    },
+    {
+      "qid": "cuad_016:Cap On Liability",
+      "answerable": true,
+      "category": "Cap On Liability",
+      "question": "Does the contract include a cap on liability upon the breach of a party’s obligation? This includes time limitation for the counterparty to bring claims or maximum amount for recovery.",
+      "status": "answered",
+      "answer": "The excerpts do not contain any provision that sets a monetary cap or a time limitation on liability for breach of a party’s obligations. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1672.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 139.4,
+        "route": 0.7,
+        "bm25": 12.6,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 548.7,
+        "expand_context": 0.4,
+        "llm": 1675.2,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 2377.5,
+      "claims": [
+        {
+          "text": "The excerpts do not contain any provision that sets a monetary cap or a time limitation on liability for breach of a party’s obligations.",
+          "verdict": "supported",
+          "reasoning": "The provided text includes sections on notices, consequential damages, successors, exclusive understanding, attorneys' fees, governing law, and counterparts. It does not contain any clause specifying a monetary cap (limitation of liability amount) or a time limitation (statute of limitations) for breach of contract."
+        }
+      ],
+      "completeness": 1,
+      "completeness_reasoning": "The reference answer explicitly cites a clause limiting liability for indirect, incidental, special, or consequential damages, which is a form of liability cap. The answer to grade incorrectly states that there are no provisions setting a cap or time limitation, thereby missing the key point provided in the reference."
+    },
+    {
+      "qid": "cuad_002:Expiration Date",
+      "answerable": true,
+      "category": "Expiration Date",
+      "question": "On what date will the contract's initial term expire?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2390.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 191.1,
+        "route": 1.5,
+        "bm25": 0.5,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 602.9,
+        "expand_context": 0.4,
+        "llm": 2407.5,
+        "llm_wait": 40282.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 43486.3,
+      "claims": []
+    },
+    {
+      "qid": "cuad_016:Renewal Term",
+      "answerable": true,
+      "category": "Renewal Term",
+      "question": "What is the renewal term after the initial term expires? This includes automatic extensions and unilateral extensions with prior notice.",
+      "status": "answered",
+      "answer": "After the initial five‑year term, the agreement automatically renews for an additional five‑year term. [c1, c3]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1157.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 196.4,
+        "route": 1.1,
+        "bm25": 1.6,
+        "dense": 0.3,
+        "fusion": 0.1,
+        "rerank": 572.9,
+        "expand_context": 0.4,
+        "llm": 1164.7,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 1937.6,
+      "claims": [
+        {
+          "text": "After the initial five‑year term, the agreement automatically renews for an additional five‑year term.",
+          "verdict": "supported",
+          "reasoning": "The source text explicitly states in Section 8(a) that the agreement 'shall automatically renew for an additional term of five (5) years thereafter' unless earlier terminated."
+        }
+      ],
+      "completeness": 5,
+      "completeness_reasoning": "The answer correctly identifies the automatic renewal term as five years, which matches the key point in the reference answer. It omits the specific initial term duration (5 years) but the question specifically asks for the renewal term, so the core information is present."
+    },
+    {
+      "qid": "cuad_004:Governing Law",
+      "answerable": true,
+      "category": "Governing Law",
+      "question": "Which state/country's law governs the interpretation of the contract?",
+      "status": "answered",
+      "answer": "The contract states that its interpretation is governed by the laws of the Commonwealth of Pennsylvania. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1828.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 157.8,
+        "route": 0.6,
+        "bm25": 3.7,
+        "dense": 0.1,
+        "fusion": 0.0,
+        "rerank": 560.5,
+        "expand_context": 0.5,
+        "llm": 1849.3,
+        "llm_wait": 38512.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 41084.6,
+      "claims": [
+        {
+          "text": "The contract states that its interpretation is governed by the laws of the Commonwealth of Pennsylvania.",
+          "verdict": "supported",
+          "reasoning": "Section 14 of the source text explicitly states that the construction and interpretation of the terms and provisions of the Agreement shall be interpreted and construed under the laws of the Commonwealth of Pennsylvania."
+        }
+      ],
+      "completeness": 4,
+      "completeness_reasoning": "The answer correctly identifies the governing law as the Commonwealth of Pennsylvania, which is the core fact in the reference answer. It omits the minor detail about exceptions where other jurisdictions' laws control, but covers the main point."
+    },
+    {
+      "qid": "cuad_008:Audit Rights",
+      "answerable": true,
+      "category": "Audit Rights",
+      "question": "Does a party have the right to  audit the books, records, or physical locations of the counterparty to ensure compliance with the contract?",
+      "status": "answered",
+      "answer": "Consolidated Artists and Advantage have the right to inspect and copy TPC's books and records relating to the computation of royalty payments during the Contract Period and for two years after termination. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1187.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 119.1,
+        "route": 0.6,
+        "bm25": 6.1,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 550.2,
+        "expand_context": 0.5,
+        "llm": 1191.3,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 1868.1,
+      "claims": [
+        {
+          "text": "Consolidated Artists and Advantage have the right to inspect and copy TPC's books and records relating to the computation of royalty payments during the Contract Period and for two years after termination.",
+          "verdict": "supported",
+          "reasoning": "The source text in Paragraph 13 explicitly states that Consolidated Artists and Advantage have the right to inspect and make copies of TPC's books and records relating to the computation of royalty payments during the Contract Period and until two years after termination."
+        }
+      ],
+      "completeness": 4,
+      "completeness_reasoning": "The answer correctly identifies the parties (Consolidated Artists and Advantage), the counterparty (TPC), the scope of the audit (books and records relating to royalty payments), and the specific timeframes (Contract Period and two years after termination). It omits the detail that the inspection is at Consolidated Artists' expense, but covers all other key points."
+    },
+    {
+      "qid": "cuad_016:Expiration Date",
+      "answerable": true,
+      "category": "Expiration Date",
+      "question": "On what date will the contract's initial term expire?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1969.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 94.5,
+        "route": 0.6,
+        "bm25": 0.7,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 519.0,
+        "expand_context": 0.4,
+        "llm": 1982.8,
+        "llm_wait": 38627.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 41225.4,
+      "claims": []
+    },
+    {
+      "qid": "cuad_008:License Grant",
+      "answerable": true,
+      "category": "License Grant",
+      "question": "Does the contract contain a license granted by one party to its counterparty?",
+      "status": "answered",
+      "answer": "Consolidated Artists grants TPC an exclusive right and license to use the Ogle Endorsement during the contract period and territory [c2]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1281.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 184.6,
+        "route": 0.8,
+        "bm25": 0.6,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 556.8,
+        "expand_context": 0.5,
+        "llm": 1294.6,
+        "validate": 0.0,
+        "output_check": 0.0
+      },
+      "total_ms": 2038.1,
+      "claims": [
+        {
+          "text": "Consolidated Artists grants TPC an exclusive right and license to use the Ogle Endorsement during the contract period and territory",
+          "verdict": "supported",
+          "reasoning": "The source text in Section 3 explicitly states that 'Consolidated Artists grants to TPC the exclusive right and license, within the Contract Territory and during the Contract Period, to use the Ogle Endorsement'. This matches the claim exactly."
+        }
+      ],
+      "completeness": 4,
+      "completeness_reasoning": "The answer correctly identifies the parties (Consolidated Artists and TPC), the nature of the grant (exclusive right and license), and the subject matter (Ogle Endorsement). It also captures the key limitations (contract period and territory). It omits the specific scope of use (manufacture, distribution, etc.) and the condition 'subject to terms and conditions', but covers the core legal point of the license grant."
+    },
+    {
+      "qid": "cuad_000:Anti-Assignment",
+      "answerable": true,
+      "category": "Anti-Assignment",
+      "question": "Is consent or notice required of a party if the contract is assigned to a third party?",
+      "status": "answered",
+      "answer": "Assignment of the agreement requires the prior written consent of the other party; it may not be assigned without that consent. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2078.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 97.2,
+        "route": 0.6,
+        "bm25": 5.4,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 522.1,
+        "expand_context": 0.4,
+        "llm": 2094.0,
+        "llm_wait": 43376.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 46095.9,
+      "claims": [
+        {
+          "text": "Assignment of the agreement requires the prior written consent of the other party; it may not be assigned without that consent.",
+          "verdict": "supported",
+          "reasoning": "The source text under section (c) explicitly states, 'This Agreement may not be assigned without the prior written consent of the other Party hereto,' which directly supports the claim."
+        }
+      ],
+      "completeness": 5,
+      "completeness_reasoning": "The answer correctly identifies that prior written consent is required for assignment, which matches the key point in the reference answer."
+    },
+    {
+      "qid": "cuad_007:Termination For Convenience",
+      "answerable": true,
+      "category": "Termination For Convenience",
+      "question": "Can a party terminate this  contract without cause (solely by giving a notice and allowing a waiting  period to expire)?",
+      "status": "answered",
+      "answer": "The Company (Emerald) may terminate the agreement without cause by giving 30 days prior written notice, and the termination date must be at least the required notice period later. [c1, c2]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1218.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 195.9,
+        "route": 0.7,
+        "bm25": 6.0,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 588.9,
+        "expand_context": 0.5,
+        "llm": 1231.8,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 2024.1,
+      "claims": [
+        {
+          "text": "The Company (Emerald) may terminate the agreement without cause by giving 30 days prior written notice, and the termination date must be at least the required notice period later.",
+          "verdict": "supported",
+          "reasoning": "The source text in section 5.4 explicitly states that the Company may terminate without cause on 30 days prior written notice and that the termination date \"must be a date, which is not earlier than the required notice period,\" which aligns with the claim."
+        }
+      ],
+      "completeness": 3,
+      "completeness_reasoning": "The answer correctly identifies that the Company (Emerald) can terminate without cause with 30 days' notice, which matches the second bullet of the reference. However, it completely omits the first bullet, which states that the Contractor may also terminate for any reason (without cause) upon 30 days' notice. Since the question asks if 'a party' can terminate, and the reference provides provisions for both parties, missing the Contractor's right makes the answer partially correct but missing an important detail."
+    },
+    {
+      "qid": "cuad_007:Expiration Date",
+      "answerable": true,
+      "category": "Expiration Date",
+      "question": "On what date will the contract's initial term expire?",
+      "status": "answered",
+      "answer": "The contract’s initial term expires 24 months after the commencement date of January 10, 2019, which is January 10, 2021. [c1, c3]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2469.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 188.6,
+        "route": 1.1,
+        "bm25": 0.8,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 558.2,
+        "expand_context": 0.4,
+        "llm": 2482.6,
+        "llm_wait": 39005.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 42237.1,
+      "claims": [
+        {
+          "text": "The contract’s initial term expires 24 months after the commencement date of January 10, 2019, which is January 10, 2021.",
+          "verdict": "supported",
+          "reasoning": "The source text explicitly states that the term commences on January 10th, 2019, and expires on the day that is twenty-four (24) months from that date. The claim correctly identifies the start date and the duration, and the calculated end date (January 10, 2021) is a direct logical consequence of the text provided."
+        }
+      ],
+      "completeness": 5,
+      "completeness_reasoning": "The answer correctly identifies the commencement date (January 10, 2019) and the duration (24 months), and accurately calculates the expiration date (January 10, 2021), covering all key points of the reference."
+    },
+    {
+      "qid": "cuad_004:Anti-Assignment",
+      "answerable": true,
+      "category": "Anti-Assignment",
+      "question": "Is consent or notice required of a party if the contract is assigned to a third party?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2782.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 202.0,
+        "route": 0.6,
+        "bm25": 0.9,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 521.7,
+        "expand_context": 0.4,
+        "llm": 2780.1,
+        "validate": 0.0,
+        "output_check": 0.0
+      },
+      "total_ms": 3505.8,
+      "claims": []
+    },
+    {
+      "qid": "cuad_009:Insurance",
+      "answerable": false,
+      "category": "Insurance",
+      "question": "Is there a requirement for insurance that must be maintained by one party for the benefit of the counterparty?",
+      "status": "refused_low_confidence",
+      "answer": "I couldn't find this in your document, so I won't guess. It may not be covered - try rephrasing, or check the right document is selected.",
+      "provider": null,
+      "llm_attempts": [],
+      "timings_ms": {
+        "embed_query": 173.5,
+        "route": 0.6,
+        "bm25": 0.7,
+        "dense": 0.4,
+        "fusion": 0.1,
+        "rerank": 581.6
+      },
+      "total_ms": 756.8,
+      "claims": []
+    },
+    {
+      "qid": "cuad_015:Exclusivity",
+      "answerable": false,
+      "category": "Exclusivity",
+      "question": "Is there an exclusive dealing  commitment with the counterparty? This includes a commitment to procure all “requirements” from one party of certain technology, goods, or services or a prohibition on licensing or selling technology, goods or services to third parties, or a prohibition on  collaborating or working with other parties), whether during the contract or  after the contract ends (or both).",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2454.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 198.0,
+        "route": 0.6,
+        "bm25": 2.0,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 521.3,
+        "expand_context": 0.5,
+        "llm": 2468.6,
+        "llm_wait": 39226.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 42417.2,
+      "claims": []
+    },
+    {
+      "qid": "cuad_008:Cap On Liability",
+      "answerable": false,
+      "category": "Cap On Liability",
+      "question": "Does the contract include a cap on liability upon the breach of a party’s obligation? This includes time limitation for the counterparty to bring claims or maximum amount for recovery.",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 953.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 255.3,
+        "route": 0.6,
+        "bm25": 1.1,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 546.2,
+        "expand_context": 0.5,
+        "llm": 947.3,
+        "validate": 0.0,
+        "output_check": 0.0
+      },
+      "total_ms": 1751.2,
+      "claims": []
+    },
+    {
+      "qid": "cuad_000:Exclusivity",
+      "answerable": false,
+      "category": "Exclusivity",
+      "question": "Is there an exclusive dealing  commitment with the counterparty? This includes a commitment to procure all “requirements” from one party of certain technology, goods, or services or a prohibition on licensing or selling technology, goods or services to third parties, or a prohibition on  collaborating or working with other parties), whether during the contract or  after the contract ends (or both).",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2015.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 201.8,
+        "route": 0.6,
+        "bm25": 2.2,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 539.9,
+        "expand_context": 0.5,
+        "llm": 2031.9,
+        "llm_wait": 44265.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 47042.3,
+      "claims": []
+    },
+    {
+      "qid": "cuad_016:Anti-Assignment",
+      "answerable": false,
+      "category": "Anti-Assignment",
+      "question": "Is consent or notice required of a party if the contract is assigned to a third party?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 907.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 197.8,
+        "route": 0.6,
+        "bm25": 1.2,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 583.4,
+        "expand_context": 0.4,
+        "llm": 913.9,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 1697.7,
+      "claims": []
+    },
+    {
+      "qid": "cuad_019:Renewal Term",
+      "answerable": false,
+      "category": "Renewal Term",
+      "question": "What is the renewal term after the initial term expires? This includes automatic extensions and unilateral extensions with prior notice.",
+      "status": "answered",
+      "answer": "After the initial term expires, the agreement can be renewed only for periods of time and on terms that the parties mutually agree to in writing, as set out in Section 4.2 and subject to the written amendment requirements of Section 12.7; there is no provision for automatic or unilateral extensions. [c1]",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2047.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 223.4,
+        "route": 0.6,
+        "bm25": 1.5,
+        "dense": 0.3,
+        "fusion": 0.1,
+        "rerank": 549.7,
+        "expand_context": 0.4,
+        "llm": 2057.2,
+        "llm_wait": 42396.0,
+        "validate": 0.1,
+        "output_check": 0.1
+      },
+      "total_ms": 45229.4,
+      "claims": [
+        {
+          "text": "After the initial term expires, the agreement can be renewed only for periods of time and on terms that the parties mutually agree to in writing, as set out in Section 4.2 and subject to the written amendment requirements of Section 12.7; there is no provision for automatic or unilateral extensions.",
+          "verdict": "supported",
+          "reasoning": "The source text in Section 4.2 explicitly states that the agreement may be renewed for periods and terms 'mutually agreed to in writing' and 'pursuant to Section 12.7'. It does not mention any automatic or unilateral extension mechanisms, supporting the claim that renewal is strictly based on mutual written agreement."
+        }
+      ]
+    },
+    {
+      "qid": "cuad_009:Exclusivity",
+      "answerable": false,
+      "category": "Exclusivity",
+      "question": "Is there an exclusive dealing  commitment with the counterparty? This includes a commitment to procure all “requirements” from one party of certain technology, goods, or services or a prohibition on licensing or selling technology, goods or services to third parties, or a prohibition on  collaborating or working with other parties), whether during the contract or  after the contract ends (or both).",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1031.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 203.3,
+        "route": 0.6,
+        "bm25": 2.0,
+        "dense": 0.1,
+        "fusion": 0.0,
+        "rerank": 560.6,
+        "expand_context": 0.4,
+        "llm": 1019.1,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 1786.5,
+      "claims": []
+    },
+    {
+      "qid": "cuad_007:License Grant",
+      "answerable": false,
+      "category": "License Grant",
+      "question": "Does the contract contain a license granted by one party to its counterparty?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2016.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 157.4,
+        "route": 0.6,
+        "bm25": 0.8,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 538.0,
+        "expand_context": 0.4,
+        "llm": 2012.9,
+        "llm_wait": 41575.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 44285.4,
+      "claims": []
+    },
+    {
+      "qid": "cuad_017:Non-Compete",
+      "answerable": false,
+      "category": "Non-Compete",
+      "question": "Is there a restriction on the ability of a party to compete with the counterparty or operate in a certain geography or business or technology sector?",
+      "status": "refused_low_confidence",
+      "answer": "I couldn't find this in your document, so I won't guess. It may not be covered - try rephrasing, or check the right document is selected.",
+      "provider": null,
+      "llm_attempts": [],
+      "timings_ms": {
+        "embed_query": 128.4,
+        "route": 0.6,
+        "bm25": 1.2,
+        "dense": 0.3,
+        "fusion": 0.2,
+        "rerank": 467.9
+      },
+      "total_ms": 598.4,
+      "claims": []
+    },
+    {
+      "qid": "cuad_007:Cap On Liability",
+      "answerable": false,
+      "category": "Cap On Liability",
+      "question": "Does the contract include a cap on liability upon the breach of a party’s obligation? This includes time limitation for the counterparty to bring claims or maximum amount for recovery.",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1797.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 83.5,
+        "route": 0.5,
+        "bm25": 0.7,
+        "dense": 0.1,
+        "fusion": 0.0,
+        "rerank": 416.8,
+        "expand_context": 0.3,
+        "llm": 1792.9,
+        "validate": 0.0,
+        "output_check": 0.0
+      },
+      "total_ms": 2294.9,
+      "claims": []
+    },
+    {
+      "qid": "cuad_006:License Grant",
+      "answerable": false,
+      "category": "License Grant",
+      "question": "Does the contract contain a license granted by one party to its counterparty?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2172.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 58.2,
+        "route": 0.4,
+        "bm25": 1.2,
+        "dense": 0.5,
+        "fusion": 0.1,
+        "rerank": 361.4,
+        "expand_context": 0.3,
+        "llm": 2177.7,
+        "llm_wait": 39973.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 42572.9,
+      "claims": []
+    },
+    {
+      "qid": "cuad_010:Insurance",
+      "answerable": false,
+      "category": "Insurance",
+      "question": "Is there a requirement for insurance that must be maintained by one party for the benefit of the counterparty?",
+      "status": "refused_low_confidence",
+      "answer": "I couldn't find this in your document, so I won't guess. It may not be covered - try rephrasing, or check the right document is selected.",
+      "provider": null,
+      "llm_attempts": [],
+      "timings_ms": {
+        "embed_query": 183.0,
+        "route": 0.6,
+        "bm25": 0.7,
+        "dense": 0.1,
+        "fusion": 0.0,
+        "rerank": 194.7
+      },
+      "total_ms": 379.1,
+      "claims": []
+    },
+    {
+      "qid": "cuad_013:Cap On Liability",
+      "answerable": false,
+      "category": "Cap On Liability",
+      "question": "Does the contract include a cap on liability upon the breach of a party’s obligation? This includes time limitation for the counterparty to bring claims or maximum amount for recovery.",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 921.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 127.7,
+        "route": 0.7,
+        "bm25": 1.8,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 582.5,
+        "expand_context": 0.9,
+        "llm": 918.8,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 1632.7,
+      "claims": []
+    },
+    {
+      "qid": "cuad_017:Insurance",
+      "answerable": false,
+      "category": "Insurance",
+      "question": "Is there a requirement for insurance that must be maintained by one party for the benefit of the counterparty?",
+      "status": "refused_low_confidence",
+      "answer": "I couldn't find this in your document, so I won't guess. It may not be covered - try rephrasing, or check the right document is selected.",
+      "provider": null,
+      "llm_attempts": [],
+      "timings_ms": {
+        "embed_query": 181.7,
+        "route": 0.6,
+        "bm25": 0.7,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 600.8
+      },
+      "total_ms": 784.1,
+      "claims": []
+    },
+    {
+      "qid": "cuad_015:Non-Compete",
+      "answerable": false,
+      "category": "Non-Compete",
+      "question": "Is there a restriction on the ability of a party to compete with the counterparty or operate in a certain geography or business or technology sector?",
+      "status": "refused_low_confidence",
+      "answer": "I couldn't find this in your document, so I won't guess. It may not be covered - try rephrasing, or check the right document is selected.",
+      "provider": null,
+      "llm_attempts": [],
+      "timings_ms": {
+        "embed_query": 115.9,
+        "route": 0.7,
+        "bm25": 0.9,
+        "dense": 0.1,
+        "fusion": 0.0,
+        "rerank": 608.4
+      },
+      "total_ms": 726.0,
+      "claims": []
+    },
+    {
+      "qid": "cuad_003:Exclusivity",
+      "answerable": false,
+      "category": "Exclusivity",
+      "question": "Is there an exclusive dealing  commitment with the counterparty? This includes a commitment to procure all “requirements” from one party of certain technology, goods, or services or a prohibition on licensing or selling technology, goods or services to third parties, or a prohibition on  collaborating or working with other parties), whether during the contract or  after the contract ends (or both).",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 1485.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 213.4,
+        "route": 0.7,
+        "bm25": 2.4,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 576.6,
+        "expand_context": 0.4,
+        "llm": 1487.1,
+        "llm_wait": 40122.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 42403.1,
+      "claims": []
+    },
+    {
+      "qid": "cuad_009:Non-Compete",
+      "answerable": false,
+      "category": "Non-Compete",
+      "question": "Is there a restriction on the ability of a party to compete with the counterparty or operate in a certain geography or business or technology sector?",
+      "status": "refused_low_confidence",
+      "answer": "I couldn't find this in your document, so I won't guess. It may not be covered - try rephrasing, or check the right document is selected.",
+      "provider": null,
+      "llm_attempts": [],
+      "timings_ms": {
+        "embed_query": 223.2,
+        "route": 0.6,
+        "bm25": 1.0,
+        "dense": 0.1,
+        "fusion": 0.1,
+        "rerank": 597.9
+      },
+      "total_ms": 822.9,
+      "claims": []
+    },
+    {
+      "qid": "cuad_005:Audit Rights",
+      "answerable": false,
+      "category": "Audit Rights",
+      "question": "Does a party have the right to  audit the books, records, or physical locations of the counterparty to ensure compliance with the contract?",
+      "status": "refused_not_in_document",
+      "answer": "Your document doesn't answer this one. I'd rather tell you that than make something up.",
+      "provider": "groq/openai/gpt-oss-120b",
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "retryable: HTTP 429",
+          "latency_ms": 1328.0
+        },
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "ok",
+          "latency_ms": 2000.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 116.5,
+        "route": 0.6,
+        "bm25": 1.2,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 551.0,
+        "expand_context": 0.4,
+        "llm": 3323.2,
+        "llm_wait": 18000.0,
+        "validate": 0.1,
+        "output_check": 0.0
+      },
+      "total_ms": 21993.3,
+      "claims": []
+    },
+    {
+      "qid": "cuad_003:Non-Compete",
+      "answerable": false,
+      "category": "Non-Compete",
+      "question": "Is there a restriction on the ability of a party to compete with the counterparty or operate in a certain geography or business or technology sector?",
+      "status": "refused_low_confidence",
+      "answer": "I couldn't find this in your document, so I won't guess. It may not be covered - try rephrasing, or check the right document is selected.",
+      "provider": null,
+      "llm_attempts": [],
+      "timings_ms": {
+        "embed_query": 219.2,
+        "route": 0.7,
+        "bm25": 1.2,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 630.6
+      },
+      "total_ms": 851.8,
+      "claims": []
+    },
+    {
+      "qid": "cuad_011:Cap On Liability",
+      "answerable": false,
+      "category": "Cap On Liability",
+      "question": "Does the contract include a cap on liability upon the breach of a party’s obligation? This includes time limitation for the counterparty to bring claims or maximum amount for recovery.",
+      "status": "error",
+      "answer": "The answer service is temporarily unavailable (LLMUnavailable).",
+      "provider": null,
+      "llm_attempts": [
+        {
+          "provider": "groq/openai/gpt-oss-120b",
+          "outcome": "retryable: HTTP 429",
+          "latency_ms": 1766.0
+        }
+      ],
+      "timings_ms": {
+        "embed_query": 166.7,
+        "route": 0.8,
+        "bm25": 1.7,
+        "dense": 0.2,
+        "fusion": 0.1,
+        "rerank": 356.4,
+        "expand_context": 0.4,
+        "llm": 1753.0
+      },
+      "total_ms": 2279.2,
+      "claims": []
+    }
+  ],
+  "metrics": {
+    "n": {
+      "answerable": 30,
+      "unanswerable": 19,
+      "claims_judged": 24,
+      "excluded_errors": 1
+    },
+    "answerable": {
+      "answered_rate": 0.7,
+      "refused_by_retrieval_gate": 0.067,
+      "refused_by_llm": 0.233
+    },
+    "unanswerable": {
+      "refusal_rate_total": 0.947,
+      "refused_by_retrieval_gate": 0.368,
+      "refused_by_llm": 0.579
+    },
+    "faithfulness": {
+      "claims_supported": 0.958,
+      "claims_partial": 0.042,
+      "claims_unsupported": 0.0,
+      "answers_with_unsupported_claim": 0.0,
+      "verdict_counts": {
+        "supported": 23,
+        "partial": 1
+      }
+    },
+    "completeness": {
+      "mean_score_1to5": 4.1,
+      "score_ge_4_rate": 0.762,
+      "score_distribution": {
+        "1": 1,
+        "3": 4,
+        "4": 7,
+        "5": 9
+      }
+    },
+    "latency_ms": {
+      "total_answered": {
+        "p50": 2648.65,
+        "p95": 45697.28,
+        "p99": 46017.36,
+        "mean": 18609.43,
+        "n": 22
+      },
+      "total_answered_excl_rate_limit_wait": {
+        "p50": 2313.5,
+        "p95": 3113.81,
+        "p99": 3209.17,
+        "mean": 2403.66,
+        "n": 22
+      },
+      "llm_model_time": {
+        "p50": 1617.5,
+        "p95": 2353.07,
+        "p99": 2456.2,
+        "mean": 1669.98,
+        "n": 22
+      },
+      "llm_rate_limit_wait": {
+        "p50": 0.0,
+        "p95": 42588.85,
+        "p99": 43212.83,
+        "mean": 16205.77,
+        "n": 22
+      },
+      "rerank": {
+        "p50": 560.6,
+        "p95": 626.86,
+        "p99": 635.64,
+        "mean": 547.71,
+        "n": 49
+      },
+      "refused_by_gate_total": {
+        "p50": 756.8,
+        "p95": 869.26,
+        "p99": 878.57,
+        "mean": 719.68,
+        "n": 9
+      }
+    },
+    "length_bias_check": {
+      "spearman_answer_length_vs_score": -0.159,
+      "p_value": 0.49,
+      "note": "a strong positive rho would suggest the judge rewards longer answers"
+    }
+  },
+  "judge_model": "qwen/qwen3.8-27b",
+  "answer_model": "groq/openai/gpt-oss-120b",
+  "seed": 11
+}

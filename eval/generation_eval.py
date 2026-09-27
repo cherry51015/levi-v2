@@ -44,7 +44,6 @@ async def run(n_ans: int, n_unans: int, seed: int) -> dict:
     rig = EvalRig()
     judge = make_judge_client()
     pipe = rig.pipeline()
-    chunk_text = {c.id: c.text for chunks in rig.chunks_by_contract.values() for c in chunks}
     rows, claims_for_labels = [], []
 
     for i, q in enumerate(sample(rig.questions, n_ans, n_unans, seed)):
@@ -64,9 +63,10 @@ async def run(n_ans: int, n_unans: int, seed: int) -> dict:
                "timings_ms": r["timings_ms"], "total_ms": r["total_ms"], "claims": []}
 
         if r["status"] == "answered":
-            cites = {c["ref"]: c["chunk_id"] for c in r["citations"]}
+            # Judge each claim against the exact text the model was shown (incl. neighbour context).
+            cites = {c["ref"]: c["text"] for c in r["citations"]}
             for j, claim in enumerate(r["claims"]):
-                sources = [chunk_text[cites[ref]] for ref in claim["citations"] if ref in cites]
+                sources = [cites[ref] for ref in claim["citations"] if ref in cites]
                 verdict = await judge_support(judge, claim["text"], sources)
                 row["claims"].append({"text": claim["text"], "verdict": verdict.get("verdict"),
                                       "reasoning": verdict.get("reasoning")})

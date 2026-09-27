@@ -114,6 +114,14 @@ def index_document(store: ChunkStore, embedder: Embedder, doc: Document, filenam
     return meta, False
 
 
+def merge_window(chunks: list[Chunk], overlap: int) -> str:
+    """Join consecutive chunks into one passage, dropping the words each chunk repeats from the previous one."""
+    words = chunks[0].text.split()
+    for nxt in chunks[1:]:
+        words += nxt.text.split()[overlap:]
+    return " ".join(words)
+
+
 class Retriever:
     BM25_CACHE_SIZE = 32
 
@@ -144,6 +152,23 @@ class Retriever:
     def invalidate(self, doc_id: str) -> None:
         for key in [k for k in self._bm25_cache if doc_id in k]:
             del self._bm25_cache[key]
+
+    def expand_context(self, results: list[ScoredChunk], doc_ids: list[str]) -> list[ScoredChunk]:
+        """Small-to-big retrieval: search with small chunks (precise matching), but give the LLM
+        each top chunk together with its neighbours (legal clauses depend on surrounding text)."""
+        window, top_n = self.cfg.context_window, self.cfg.context_expand_top
+        index = self._bm25_for(doc_ids) if window > 0 and results else None
+        if index is None:
+            return results
+        by_position = {(c.doc_id, c.index): c for c in index.chunks}  # the scope's chunks are already cached
+        expanded = []
+        for rank, sc in enumerate(results):
+            if rank < top_n:
+                c = sc.chunk
+                parts = [by_position.get((c.doc_id, c.index + d)) for d in range(-window, window + 1)]
+                sc = sc.model_copy(update={"context": merge_window([p for p in parts if p], self.cfg.chunk_overlap)})
+            expanded.append(sc)
+        return expanded
 
     @observe(name="retrieve", as_type="retriever", capture_input=False, capture_output=False)
     def retrieve(self, query: str, doc_ids: list[str], mode: str = "hybrid_rerank",

@@ -121,3 +121,17 @@ def test_advice_detector_ignores_document_language():
     assert not contains_advice("The Tenant shall give thirty days' notice.")
     assert not contains_advice("The Licensee must pay royalties quarterly.")
     assert not contains_advice("The agreement recommends mediation before arbitration.")
+
+
+def test_top_chunks_reach_the_llm_with_neighbour_context():
+    seen = {}
+
+    class RecordingLLM(FakeLLM):
+        async def complete(self, messages, **kw):
+            seen["prompt"] = messages[1]["content"]
+            return await super().complete(messages, **kw)
+
+    r = ask(setup(FakeRouter("informational"), RecordingLLM(answer("Notice is 30 days."))))
+    assert r.status == "answered" and "expand_context" in r.timings_ms
+    first_chunk = seen["prompt"].split("</chunk>")[0]
+    assert len(first_chunk.split()) > 40  # 40-word chunks, widened by their neighbours

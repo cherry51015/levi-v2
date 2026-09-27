@@ -32,6 +32,7 @@ Question
   → embed once → intent router (logistic regression on that embedding; trusted only when confident)
   → BM25 + vector search → reciprocal rank fusion → MiniLM cross-encoder rerank (top 10 → 5)
   → refusal gate: best rerank score below a tuned threshold → refuse without calling the LLM
+  → small-to-big context: the top 3 passages are widened with their neighbouring chunks
   → LLM returns JSON claims, each citing chunk ids (gpt-oss-120b → gpt-oss-20b → nemotron fallback)
   → claims citing anything not retrieved are dropped; advice-style sentences are removed
   → answer + evidence + per-stage timings + Langfuse trace
@@ -72,24 +73,32 @@ is retrieval only, on a laptop CPU. Source: `eval/results/retrieval_*.json`.
 
 ### Refusal gate (held-out split)
 
-The threshold was tuned on half the contracts, with false refusals capped at 10%, and tested on the other half:
-**85% precision, 32% recall** on unanswerable questions, 8.5% false refusals, with no LLM call. The cheap gate catches
-about a third of unanswerable questions; the LLM's own "not answerable" check handles the rest.
+The gate only filters clearly irrelevant questions; close calls go to the LLM. Tuned on half the contracts with false
+refusals capped at 2%, tested on the other half: **90% precision, 4.3% false refusals**, catching 23% of unanswerable
+questions with no LLM call. (The first version, capped at 10%, had 85% precision but 8.5% false refusals.)
 
-### Answer quality (LLM-as-judge, 50 sampled questions)
+### Answer quality (LLM-as-judge, same 50 questions, before and after)
 
-| Metric | Result | n |
+| Metric | Run 1 | Run 2 (current) |
 |---|---|---|
-| Claims fully supported by their cited chunk | 91% (20) | 22 claims |
-| Partially supported | 9% (2) | |
-| Unsupported | 0 | |
-| Completeness vs the lawyer-marked answer | 3.95 / 5 (76% scored ≥ 4) | 21 answers |
-| Answerable questions answered | 70% (9 false refusals: 3 by the gate, 6 by the LLM) | 30 |
-| Unanswerable questions refused | 12 of 12 scored | 12 |
-| Excluded as infrastructure errors (daily quota, HTTP 429) | 8 of 50 | |
+| Claims fully supported by their cited passage | 91% (20 / 22) | **96% (23 / 24)** |
+| Unsupported (made-up) claims | 0 | **0** |
+| Completeness vs the lawyer-marked answer | 3.95 / 5 | **4.10 / 5** |
+| Unanswerable questions refused | 12 / 12 | **18 / 19** |
+| Answerable questions answered | 70% (21 / 30) | 70% (21 / 30) |
+| Excluded as infrastructure errors (daily quota, HTTP 429) | 8 of 50 | 1 of 50 |
 
-The judge reasons before giving a verdict, checks each claim only against the chunk it cites, and shows no length bias
-(Spearman ρ = −0.42 between answer length and score). **The judge has not yet been validated against human labels.**
+Run 2 added a recalibrated refusal gate, small-to-big context, and an instruction to report indirect answers. What
+changed, question by question: a licence-grant question the old gate wrongly refused is now answered (4 / 5); an
+exclusivity question previously answered from the wrong clause (1 / 5) is now an honest refusal; the one
+"unanswerable" question answered in run 2 got a correct, cited answer ("renewal only by mutual written agreement")
+that the dataset labels as out of scope. **The indirect-answer instruction did not work:** 5 of 7 expiry-date questions
+are still refused, and they remain the main source of wrongly refused questions. An error analysis of run 1 showed that in
+every wrongly refused case the evidence *had* been retrieved, so the bottleneck is the answer step, not search.
+
+The judge reasons before giving a verdict, checks each claim against the exact text the model was shown, and shows no
+length bias (Spearman ρ = −0.16). **The judge has not yet been validated against human labels.** Small samples: treat
+these as indicative.
 
 ### Guardrails (58 hand-written red-team queries)
 
@@ -108,17 +117,18 @@ the daily token quota and is excluded (`eval/results/invalid/`).
 
 ### Latency
 
-End-to-end for answered questions, excluding rate-limit stalls: **p50 1.57 s, p95 2.54 s** (n=16). LLM call
-p50 0.96 s; reranker p50 446 ms. Retrieval itself (BM25 + vector search + fusion) is under 20 ms: the LLM and the
-reranker are 90%+ of the time. Five calls that stalled 40 s+ on the per-minute token limit were excluded; that run
-predates separate wait-time logging, so the split is a heuristic. Newer requests report `llm_wait` as its own stage.
+End-to-end for answered questions, with rate-limit waiting logged separately and excluded: **p50 2.31 s, p95 3.11 s**
+(n=22, run 2). LLM generation p50 1.62 s; reranker p50 561 ms. Search itself (BM25 + vector search + fusion) takes
+under 20 ms in the live app, so the LLM and the reranker are 90%+ of the time. Small-to-big context raised prompts from
+about 1.9k to 3.4k tokens: answers got more complete, but generation time rose from ~1.0 s (run 1) and the free tier's
+8k tokens/minute now fits about 2 answers per minute instead of 4.
 
 ## Limitations and open items
 
-- Judge not yet validated against human labels (`eval/label_app.py` is ready; 0 of 22 claims labelled).
-- The prompt fix for indirect answers ("five years from the effective date" when asked for a date) is unmeasured; a
-  same-seed re-run was blocked by the provider's daily quota.
-- Small samples: 22 judged claims and 21 answers; treat the generation numbers as indicative.
+- Judge not yet validated against human labels (`eval/label_app.py` is ready; 0 of 24 claims labelled).
+- Expiry-date questions whose answer is a duration ("five years from the effective date") are still usually refused.
+- Small samples: 24 judged claims and 22 answers; treat the generation numbers as indicative.
+- The safety results predate the router simplification; the re-run hit the daily quota (`eval/results/invalid/`).
 - The router training data and the red-team set were written by the same author.
 - Evals run on the in-memory store; the Qdrant backend passes the same unit tests but the full eval hasn't been re-run on it.
 - A citation's page is the page its chunk starts on; a clause at the top of a page can be cited as the previous page.
@@ -147,7 +157,7 @@ docker run --env-file .env -p 7860:7860 levi-v2          # http://localhost:7860
 
 **Tests and evals:**
 ```bash
-pytest -q                                   # 54 unit tests; no model downloads or API keys needed
+pytest -q                                   # 56 unit tests; no model downloads or API keys needed
 python -m eval.cuad --contracts 20          # build the CUAD eval set
 python -m eval.retrieval_eval               # retrieval ablation
 python -m eval.refusal_eval --mode hybrid_rerank

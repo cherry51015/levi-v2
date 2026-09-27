@@ -121,6 +121,9 @@ class Pipeline:
             return finish(status="refused_low_confidence", answer=REFUSAL_LOW_CONFIDENCE,
                           retrieval_confidence=round(confidence, 3))
 
+        with timer.stage("expand_context"):
+            chunks = self.retriever.expand_context(chunks, doc_ids)
+
         advice = intent == "advice"
         try:
             grounded = await generate_answer(self.llm, question, chunks, timer=timer,
