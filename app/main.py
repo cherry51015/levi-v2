@@ -92,6 +92,13 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
     meta, cached = await asyncio.to_thread(index_document, request.app.state.store, retriever.embedder,
                                            doc, file.filename or "upload.txt")
     retriever.invalidate(meta.doc_id)
+    try:
+        # One LLM call per document, so "what is this about?" has a cited overview ready.
+        # If the LLM is unavailable the upload still succeeds; the overview is built on first use.
+        if await request.app.state.pipeline.ensure_overview(meta.doc_id):
+            meta = next(m for m in request.app.state.store.list_documents() if m.doc_id == meta.doc_id)
+    except Exception:
+        log.warning("overview generation failed for %s; will retry on first use", meta.doc_id)
     return UploadResponse(document=meta, cached=cached, ingest_ms=round((time.perf_counter() - t0) * 1000, 1))
 
 

@@ -13,9 +13,12 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from levi.answer import REFUSAL_LOW_CONFIDENCE, GroundedAnswer, generate_answer
-from levi.guardrails import ADVICE_NOTE, OFF_TOPIC_REPLY, IntentRouter, contains_advice
+from levi.answer import REFUSAL_LOW_CONFIDENCE, Citation, Claim, GroundedAnswer, evidence_snippet, generate_answer
+from levi.documents import is_document_level, resolve_documents
+from levi.guardrails import (ADVICE_NOTE, NOT_FOUND_AND_ADVICE, OFF_TOPIC_REPLY, IntentRouter, asks_for_advice,
+                             contains_advice)
 from levi.llm import LLMClient
+from levi.overview import build_overview
 from levi.retrieval import Retriever
 from levi.schemas import ScoredChunk
 from levi.timing import StageTimer
@@ -33,6 +36,8 @@ class AskResponse(GroundedAnswer):
     timings_ms: dict[str, float] = {}
     total_ms: float = 0.0
     trace_id: str | None = None  # Langfuse trace, for debugging a specific answer
+    answer_mode: Literal["passages", "overview"] = "passages"
+    scoped_to: list[str] | None = None  # doc_ids the question named ("the lease", "second document")
 
 
 def retrieval_confidence(chunks: list[ScoredChunk]) -> float:
@@ -69,6 +74,51 @@ class Pipeline:
         if self.offload_cpu:
             return await asyncio.to_thread(fn, *args, **kwargs)
         return fn(*args, **kwargs)
+
+    async def ensure_overview(self, doc_id: str) -> dict | None:
+        """Build and store a document's overview if it doesn't have one yet (one LLM call, then cached)."""
+        store = self.retriever.store
+        meta = next((m for m in store.list_documents() if m.doc_id == doc_id), None)
+        if meta is None:
+            return None
+        if meta.overview:
+            return meta.overview
+        overview = await build_overview(self.llm, store.get_chunks([doc_id]))
+        if overview:
+            store.update_meta(meta.model_copy(update={"overview": overview}))
+        return overview
+
+    async def _answer_from_overview(self, doc_ids: list[str], metas: dict, finish, timer: StageTimer,
+                                    advice: bool) -> "AskResponse":
+        chunks = {c.id: c for c in self.retriever.store.get_chunks(doc_ids)}
+        claims, citations, ref_of = [], [], {}
+        with timer.stage("overview"):
+            overviews = [(d, await self.ensure_overview(d)) for d in doc_ids[:3]]
+        for doc_id, ov in overviews:
+            if not ov:
+                continue
+            for i, c in enumerate(ov["claims"]):
+                refs = []
+                for cid in c["chunk_ids"]:
+                    if cid not in chunks:
+                        continue
+                    if cid not in ref_of:
+                        ref_of[cid] = f"c{len(ref_of) + 1}"
+                    refs.append(ref_of[cid])
+                if not refs:
+                    continue
+                prefix = f"{metas[doc_id].filename}: " if len(doc_ids) > 1 and i == 0 else ""
+                claims.append(Claim(text=prefix + c["text"], citations=refs))
+        if not claims:
+            return None
+        for cid, ref in ref_of.items():
+            chunk = chunks[cid]
+            snippet, words = evidence_snippet(chunk.text, [c.text for c in claims if ref in c.citations])
+            citations.append(Citation(ref=ref, chunk_id=cid, page=chunk.page, snippet=snippet, text=chunk.text,
+                                      highlights=words))
+        answer = " ".join(f"{c.text} [{', '.join(c.citations)}]" for c in claims)
+        return finish(status="answered", answer=answer, claims=claims, citations=citations, answer_mode="overview",
+                      provider="document overview", notice=ADVICE_NOTE if advice else None)
 
     @observe(name="intent_router", as_type="guardrail", capture_input=False, capture_output=False)
     def _route(self, question: str, qvec, timer: StageTimer) -> tuple[str, float, str]:
@@ -109,22 +159,41 @@ class Pipeline:
 
         if intent == "off_topic":
             return finish(status="off_topic", answer=OFF_TOPIC_REPLY)
+        wants_advice = intent == "advice" or asks_for_advice(question)
+
+        # "the lease", "the second document": narrow the search to the documents the user named.
+        metas = {m.doc_id: m for m in self.retriever.store.list_documents()}
+        scoped = resolve_documents(question, [metas[d] for d in sorted(doc_ids, key=lambda d: metas[d].uploaded_at)
+                                              if d in metas])
+        if scoped:
+            doc_ids = scoped
+            base["scoped_to"] = scoped
+
+        # "what is it about?", "summarise", "who are the parties": answer from the stored overview.
+        if is_document_level(question):
+            try:
+                result = await self._answer_from_overview(doc_ids, metas, finish, timer, wants_advice)
+            except Exception:
+                result = None  # overview unavailable (e.g. LLM down): fall back to passage search below
+            if result is not None:
+                return result
 
         chunks = await self._cpu(self.retriever.retrieve, question, doc_ids, mode=self.retrieval_mode,
                                  timer=timer, query_vec=qvec)
         confidence = retrieval_confidence(chunks)
         if confidence < self.refusal_threshold:
             # Nothing relevant enough: refuse without spending an LLM call.
-            if intent == "advice":
-                # "Should I sign?" rarely matches a clause; "couldn't find anything" would mislead.
-                return finish(status="refused_advice", answer=ADVICE_NOTE, retrieval_confidence=round(confidence, 3))
+            if wants_advice:
+                # Nothing relevant found AND an advice question: say both, rather than only "no advice".
+                return finish(status="refused_low_confidence", answer=NOT_FOUND_AND_ADVICE,
+                              retrieval_confidence=round(confidence, 3))
             return finish(status="refused_low_confidence", answer=REFUSAL_LOW_CONFIDENCE,
                           retrieval_confidence=round(confidence, 3))
 
         with timer.stage("expand_context"):
             chunks = self.retriever.expand_context(chunks, doc_ids)
 
-        advice = intent == "advice"
+        advice = wants_advice
         try:
             grounded = await generate_answer(self.llm, question, chunks, timer=timer,
                                              advice_mode=advice,
@@ -135,7 +204,9 @@ class Pipeline:
                           retrieval_confidence=round(confidence, 3), llm_attempts=attempts)
 
         fields = grounded.model_dump()
-        if grounded.status == "refused_advice" or (advice and grounded.status != "answered"):
+        if advice and grounded.status == "refused_not_in_document":
+            fields.update(answer=NOT_FOUND_AND_ADVICE)
+        elif grounded.status == "refused_advice" or (advice and grounded.status != "answered"):
             fields.update(status="refused_advice", answer=ADVICE_NOTE)
         elif advice:
             fields["notice"] = ADVICE_NOTE

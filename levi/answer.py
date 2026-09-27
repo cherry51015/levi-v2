@@ -50,7 +50,7 @@ class Citation(BaseModel):
     snippet: str  # the part of the chunk that best matches the claims citing it
     text: str  # the full chunk, so the user can read the evidence in context
     highlights: list[str] = []  # words shared by claim and snippet, for display
-    score: float  # retrieval score of this chunk (rerank logit when reranking is on)
+    score: float | None = None  # retrieval score (rerank logit); None for overview passages
 
 
 _SENTENCE_SPLIT = re.compile(r"(?<=[.;:!?])\s+|\n+")

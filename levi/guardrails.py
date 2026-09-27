@@ -23,6 +23,8 @@ TRAIN_PATH = Path(__file__).parent / "data" / "intent_train.jsonl"
 
 ADVICE_NOTE = ("I can tell you exactly what your document says, but not what you should do. "
                "For a decision about your situation, a qualified lawyer is the right person to ask.")
+NOT_FOUND_AND_ADVICE = ("Your document doesn't seem to cover this, so there are no facts I can give you here. "
+                        "And whether to act on it is a decision for a qualified lawyer.")
 OFF_TOPIC_REPLY = ("I'm built to answer questions about your documents. Try asking about a clause, "
                    "a deadline, a payment, or who is responsible for what.")
 
@@ -72,3 +74,17 @@ _ADVICE_RE = re.compile("|".join(_ADVICE_PATTERNS), flags=re.IGNORECASE)
 
 def contains_advice(text: str) -> bool:
     return bool(_ADVICE_RE.search(text))
+
+
+# Question-side advice phrasing. The router can label a mixed question ("Is there a cap? Should I sign?")
+# as informational because the factual half dominates; this catches the advice half. It only ever makes
+# Levi more careful (facts-only mode + lawyer note); it never blocks a question.
+_ASKS_ADVICE_RE = re.compile(
+    r"\bshould\s+(?:i|we|my|our)\b|\bis\s+it\s+(?:worth|safe|wise|smart|a good idea|risky|fair)\b|"
+    r"\bwould\s+you\b|\bdo\s+you\s+(?:think|recommend|advise)\b|\bwhat\s+would\s+you\b|"
+    r"\b(?:can|could)\s+i\s+(?:sue|get away|avoid|refuse|break)\b|\bworry\b",
+    flags=re.IGNORECASE)
+
+
+def asks_for_advice(question: str) -> bool:
+    return bool(_ASKS_ADVICE_RE.search(question))

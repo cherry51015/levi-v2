@@ -25,6 +25,8 @@ class DocumentMeta(BaseModel):
     n_chunks: int
     n_words: int
     uploaded_at: float
+    # {"title": str, "claims": [{"text": str, "chunk_ids": [...]}]} - built by levi/overview.py; None until built.
+    overview: dict | None = None
 
 
 class ChunkStore(Protocol):
@@ -32,6 +34,7 @@ class ChunkStore(Protocol):
     def has_document(self, doc_id: str) -> bool: ...
     def list_documents(self) -> list[DocumentMeta]: ...
     def delete_document(self, doc_id: str) -> None: ...
+    def update_meta(self, meta: DocumentMeta) -> None: ...
     def get_chunks(self, doc_ids: list[str]) -> list[Chunk]: ...
     def dense_search(self, query_vec: np.ndarray, doc_ids: list[str], k: int) -> list[tuple[Chunk, float]]: ...
 
@@ -51,6 +54,11 @@ class InMemoryStore:
 
     def delete_document(self, doc_id: str) -> None:
         self._docs.pop(doc_id, None)
+
+    def update_meta(self, meta: DocumentMeta) -> None:
+        if meta.doc_id in self._docs:
+            _, chunks, vectors = self._docs[meta.doc_id]
+            self._docs[meta.doc_id] = (meta, chunks, vectors)
 
     def get_chunks(self, doc_ids: list[str]) -> list[Chunk]:
         return [c for d in doc_ids if d in self._docs for c in self._docs[d][1]]
@@ -117,6 +125,11 @@ class QdrantStore:
 
     def delete_document(self, doc_id: str) -> None:
         self.client.delete(self.COLLECTION, points_selector=self._m.FilterSelector(filter=self._doc_filter([doc_id])))
+
+    def update_meta(self, meta: DocumentMeta) -> None:
+        # Document metadata lives on the first chunk's payload.
+        self.client.set_payload(self.COLLECTION, payload={"doc_meta": meta.model_dump()},
+                                points=[self._point_id(f"{meta.doc_id}:0")], wait=True)
 
     def get_chunks(self, doc_ids: list[str]) -> list[Chunk]:
         chunks = [Chunk(**{k: v for k, v in r.payload.items() if k != "doc_meta"})

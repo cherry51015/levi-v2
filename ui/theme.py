@@ -43,6 +43,9 @@ h1, h2, h3 {{ letter-spacing: -0.01em; }}
 .lv-claims li {{ margin:.35rem 0; line-height:1.55; color:var(--ink); }}
 .lv-chip {{ display:inline-block; font-size:.72rem; font-weight:600; color:{ACCENT}; background:#eef4fc; border:1px solid #cde2fb;
             border-radius:6px; padding:0 6px; margin-left:4px; vertical-align:1px; font-family:ui-monospace,Consolas,monospace; }}
+.lv-scope {{ display:inline-block; font-size:.76rem; color:{INK_2}; background:#f1f0ec; border:1px solid {HAIRLINE};
+             border-radius:999px; padding:1px 9px; margin-left:6px; }}
+.lv-doctype {{ font-size:.74rem; color:{MUTED}; margin:-10px 0 6px 30px; }}
 .lv-notice {{ border-left:3px solid {WARNING}; background:#fff8e8; padding:8px 12px; border-radius:6px; color:var(--ink); font-size:.9rem; margin:.4rem 0; }}
 .lv-refusal {{ border-left:3px solid {MUTED}; background:#f3f2ee; padding:8px 12px; border-radius:6px; color:var(--ink2); font-size:.92rem; }}
 
@@ -149,8 +152,10 @@ def esc(text) -> str:
     return html.escape(str(text))
 
 
-def pill(status: str) -> str:
+def pill(status: str, mode: str = "passages") -> str:
     label, colour, icon = STATUS.get(status, (status, MUTED, "•"))
+    if status == "answered" and mode == "overview":
+        label = "Answered from document overview"
     return f'<span class="lv-pill"><span class="lv-dot" style="background:{colour}"></span>{icon} {esc(label)}</span>'
 
 

@@ -12,7 +12,8 @@ from theme import CSS, GOOD, INK_2, MUTED, WARNING, card, esc, fmt_ms, highlight
 
 API = os.getenv("LEVI_API_URL", "http://127.0.0.1:8000")
 REFUSAL_THRESHOLD = float(os.getenv("LEVI_REFUSAL_THRESHOLD", "-8.65"))
-EXAMPLES = ["What is the notice period for termination?", "Which law governs this agreement?",
+EXAMPLES = ["What is this document about?", "What is the notice period for termination?",
+            "Which law governs this agreement?",
             "Is there a cap on liability?", "Should I sign this agreement?"]
 
 st.set_page_config(page_title="Levi · legal document Q&A", page_icon="⚖️", layout="wide")
@@ -53,6 +54,8 @@ with st.sidebar:
         if c1.checkbox(d["filename"], value=True, key=d["doc_id"],
                        help=f"{d['n_words']:,} words · {d['n_chunks']} chunks · id {d['doc_id']}"):
             selected_docs.append(d["doc_id"])
+        if (d.get("overview") or {}).get("title"):
+            c1.markdown(f'<div class="lv-doctype">{esc(d["overview"]["title"])}</div>', unsafe_allow_html=True)
         if c2.button(":material/delete:", key=f"del-{d['doc_id']}", help="Remove from library", type="tertiary"):
             api("DELETE", f"/documents/{d['doc_id']}")
             st.rerun()
@@ -84,7 +87,10 @@ tab_ask, tab_eval, tab_how = st.tabs(["Ask", "Evaluation", "How it works"])
 def render_answer(turn: dict, idx: int) -> None:
     body = turn["response"]
     status = body.get("status", "error")
-    st.markdown(pill(status), unsafe_allow_html=True)
+    scope = ""
+    if body.get("scoped_to"):
+        scope = '<span class="lv-scope">searched only: ' + esc(", ".join(names.get(d, d) for d in body["scoped_to"])) + "</span>"
+    st.markdown(pill(status, body.get("answer_mode", "passages")) + scope, unsafe_allow_html=True)
     if body.get("notice"):
         st.markdown(f'<div class="lv-notice">{esc(body["notice"])}</div>', unsafe_allow_html=True)
     if status == "answered":
@@ -97,7 +103,9 @@ def render_answer(turn: dict, idx: int) -> None:
             page = f" · page {c['page']}" if c.get("page") else ""
             sources.append(
                 f'<div class="lv-src"><div class="lv-src-head"><span><span class="lv-chip">{esc(c["ref"])}</span> '
-                f'<b>{esc(doc)}</b>{esc(page)}</span><span>relevance {c.get("score", 0):.2f}</span></div>'
+                f'<b>{esc(doc)}</b>{esc(page)}</span><span>'
+                f'{"relevance " + format(c["score"], ".2f") if c.get("score") is not None else "overview passage"}'
+                f'</span></div>'
                 f'<div class="lv-src-body">{highlight(c["snippet"], c.get("highlights", []))}</div>'
                 f'<details style="margin-top:6px"><summary style="font-size:.78rem;color:{INK_2};cursor:pointer">'
                 f'Full passage</summary><div class="lv-src-body" style="margin-top:6px">'
@@ -120,13 +128,24 @@ def guardrail_checks(b: dict) -> str:
     src = {"classifier": "confident", "uncertain": "unsure, so retrieval decides", "disabled": "off"}
     checks = [("✓", GOOD, "Intent router", f'{b["intent"]} · confidence {b["intent_confidence"]:.2f} · '
                                            f'{src.get(b["intent_source"], b["intent_source"])}')]
+    if b.get("scoped_to"):
+        checks.append(("✓", GOOD, "Document scope",
+                       "question named a document: searched only " + ", ".join(names.get(d, d) for d in b["scoped_to"])))
+    if b.get("answer_mode") == "overview":
+        checks.append(("✓", GOOD, "Document overview",
+                       "whole-document question: answered from the overview built at upload"))
+        checks.append(("✓", GOOD, "Citation check", f'{len(b.get("claims", []))} overview claims, each citing a passage'))
+        return '<ul class="lv-checks">' + "".join(
+            f'<li><span class="icon" style="color:{c}">{i}</span><span class="what">{esc(w)}</span>'
+            f'<span class="detail">{esc(d)}</span></li>' for i, c, w, d in checks) + "</ul>"
     if not reached_retrieval:
         checks.append(("↷", MUTED, "Scope", "outside document Q&A: stopped before retrieval, no LLM call"))
     else:
         conf = b.get("retrieval_confidence")
         ok = conf is not None and conf >= REFUSAL_THRESHOLD
-        checks.append(("✓" if ok else "∅", GOOD if ok else MUTED, "Refusal gate",
-                       f"score {conf:.2f} vs cut-off {REFUSAL_THRESHOLD:g}" + ("" if ok else ": refused, no LLM call")))
+        detail = (f"score {conf:.2f} vs cut-off {REFUSAL_THRESHOLD:g}" if conf is not None else "no score") + \
+            ("" if ok else ": refused, no LLM call")
+        checks.append(("✓" if ok else "∅", GOOD if ok else MUTED, "Refusal gate", detail))
     if reached_llm:
         n_claims = len(b.get("claims", []))
         checks.append(("✓", GOOD, "Citation check",

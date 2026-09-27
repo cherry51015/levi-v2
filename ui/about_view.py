@@ -55,6 +55,9 @@ DECISIONS = [
      "passage is dropped. 0 unsupported claims out of 22 judged."),
     ("An independent judge", "Answers are graded by Qwen, a different model family from the answering model, "
      "claim by claim, with reasoning before the verdict."),
+    ("Whole-document questions", "Passage search can't answer 'what is this about?'. Each document gets a short "
+     "overview at upload, one LLM call, every claim citing a passage, and questions that name a document "
+     "('the lease', 'the second document') search only that document."),
     ("Built for free-tier limits", "The client reads rate-limit headers and throttles before sending, falls back "
      "across models, and a circuit breaker stops calls to a failing provider."),
 ]

@@ -27,9 +27,12 @@ Upload (PDF / DOCX / TXT)
   → SHA-256 document id (re-uploading the same file skips re-embedding)
   → chunks of 200 words, 40 overlap, keeping page numbers and character offsets
   → bge-base-en-v1.5 embeddings → Qdrant (embedded, on disk)
+  → a short overview of the whole document (one LLM call; every claim cites a passage)
 
 Question
   → embed once → intent router (logistic regression on that embedding; trusted only when confident)
+  → "the lease" / "the second document" → search only that document
+  → "what is it about?" / "summarise" / "who are the parties?" → answer from the stored overview
   → BM25 + vector search → reciprocal rank fusion → MiniLM cross-encoder rerank (top 10 → 5)
   → refusal gate: best rerank score below a tuned threshold → refuse without calling the LLM
   → small-to-big context: the top 3 passages are widened with their neighbouring chunks
@@ -47,6 +50,13 @@ Question
 | Storage | Qdrant in embedded mode (tests and offline evals use an in-memory store behind the same interface) |
 | API / UI | FastAPI, Streamlit |
 | Tracing | Langfuse (optional; off without keys) |
+
+**Whole-document questions.** Passage search can't answer "what is this document about?": no single passage is
+about the whole document. So each upload gets a short overview built from representative passages (the opening, plus
+the best matches for parties, term, payment and governing law), with the same citation check as normal answers.
+Questions that name a document ("the lease", "the second document", a filename) search only that document, and
+questions that mix a factual ask with "should I…?" get the facts plus a note that the decision is a lawyer's.
+The overview costs one LLM call per upload; overview answers are served from storage in under 200 ms.
 
 The LLM client handles the free tier's limits (8k tokens/minute and 200k tokens/day per model): per-call timeouts,
 exponential backoff with jitter, `Retry-After`, a circuit breaker per model, proactive throttling from the provider's
@@ -136,6 +146,8 @@ about 1.9k to 3.4k tokens: answers got more complete, but generation time rose f
 - Free Hugging Face Spaces have no persistent disk: uploaded documents are lost when the Space restarts.
 - No OCR: scanned PDFs and images are rejected with a clear error.
 - English only.
+- Whole-document handling is rule-based (question patterns and filename matching) and has unit tests but no
+  labelled evaluation set yet.
 
 ## Run it
 
@@ -157,7 +169,7 @@ docker run --env-file .env -p 7860:7860 levi-v2          # http://localhost:7860
 
 **Tests and evals:**
 ```bash
-pytest -q                                   # 56 unit tests; no model downloads or API keys needed
+pytest -q                                   # 93 unit tests; no model downloads or API keys needed
 python -m eval.cuad --contracts 20          # build the CUAD eval set
 python -m eval.retrieval_eval               # retrieval ablation
 python -m eval.refusal_eval --mode hybrid_rerank
