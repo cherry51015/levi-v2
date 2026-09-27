@@ -126,6 +126,68 @@ h1, h2, h3 {{ letter-spacing: -0.01em; }}
 </style>
 """
 
+# Visual polish, kept separate from the structural CSS above: typography, depth, the hero banner.
+POLISH_CSS = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+.stApp, .stApp *:not([data-testid="stIconMaterial"]):not(.material-symbols-rounded) {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+header[data-testid="stHeader"] { background: transparent; }
+.block-container { padding-top: 1.4rem; }
+
+.lv-hero { position:relative; border-radius:18px; padding:24px 28px; margin:0 0 18px 0; overflow:hidden; color:#fff;
+  background: radial-gradient(900px 260px at 92% -30%, rgba(134,182,239,.40), transparent 60%),
+              linear-gradient(135deg, #0d1b2e 0%, #13325b 55%, #1c5cab 100%);
+  box-shadow: 0 12px 32px rgba(13,27,46,.20); }
+.lv-hero .row { display:flex; align-items:center; gap:14px; }
+.lv-logo { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-size:1.45rem; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.24); }
+.lv-hero .name { font-size:1.75rem; font-weight:800; letter-spacing:-.02em; line-height:1.1; }
+.lv-hero .tag { color:#cde2fb; font-size:.95rem; font-weight:500; }
+.lv-hero .sub { color:#e6eefa; font-size:.92rem; margin-top:12px; max-width:780px; line-height:1.55; }
+.lv-hero .badges { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+.lv-hero .badge { font-size:.76rem; font-weight:600; color:#fff; background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.24); border-radius:999px; padding:4px 11px; }
+
+.lv-card, .lv-q, .lv-tile, .lv-step, .lv-src, [data-testid="stMetric"] {
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05); }
+.lv-card, .lv-src { border-radius:12px; }
+.lv-tile, .lv-step { transition: transform .15s ease, box-shadow .15s ease; }
+.lv-tile:hover, .lv-step:hover { transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(16,24,40,.06), 0 14px 30px rgba(16,24,40,.09); }
+.lv-tile .v, .lv-hero-title { background: linear-gradient(135deg, #0d1b2e 0%, #1c5cab 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+[data-testid="stChatMessage"] { background:#fcfcfb; border:1px solid rgba(11,11,11,.08); border-radius:14px;
+  padding:14px 16px; margin-bottom:10px; box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.04); }
+[data-testid="stChatInput"] { border-radius:14px; box-shadow: 0 6px 20px rgba(16,24,40,.08); }
+
+.stTabs [data-baseweb="tab-list"] { gap:4px; border-bottom:none; background:#ecebe6; padding:4px; border-radius:12px;
+  width:fit-content; }
+.stTabs [data-baseweb="tab"] { border-radius:9px; padding:6px 16px; height:auto; }
+.stTabs [aria-selected="true"] { background:#fff; box-shadow: 0 1px 3px rgba(16,24,40,.14); }
+.stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] { display:none; }
+
+[data-testid="stSidebar"] h4 { font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:#52514e; }
+.lv-sidebrand { display:flex; align-items:center; gap:8px; font-weight:800; font-size:1.05rem; color:#0d1b2e;
+  margin:-6px 0 14px 0; }
+.lv-sidebrand span { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#13325b,#1c5cab); color:#fff; font-size:.9rem; }
+</style>
+"""
+
+HERO_BADGES = ["Every claim cited", "Says when it doesn't know", "No legal advice", "Open-weight models"]
+
+
+def hero() -> str:
+    badges = "".join(f'<span class="badge">✓ {b}</span>' for b in HERO_BADGES)
+    return ('<div class="lv-hero"><div class="row"><div class="lv-logo">⚖️</div><div><div class="name">Levi</div>'
+            '<div class="tag">Answers from your contracts, with the receipts</div></div></div>'
+            '<div class="sub">Ask anything about your documents. Every answer shows the exact passage it came from, '
+            'and Levi tells you when the answer isn\'t there.</div>'
+            f'<div class="badges">{badges}</div></div>')
+
+
 # status -> (label, colour, icon). Colour never carries meaning alone: icon + label always shown.
 STATUS = {
     "answered": ("Answered with sources", GOOD, "✓"),

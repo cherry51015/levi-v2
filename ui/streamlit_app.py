@@ -8,7 +8,7 @@ import streamlit as st
 import about_view
 import eval_view
 from charts import confidence_track, stage_timeline
-from theme import CSS, GOOD, INK_2, MUTED, WARNING, card, esc, fmt_ms, highlight, pill, stat
+from theme import CSS, GOOD, INK_2, MUTED, POLISH_CSS, WARNING, card, esc, fmt_ms, hero, highlight, pill, stat
 
 API = os.getenv("LEVI_API_URL", "http://127.0.0.1:8000")
 REFUSAL_THRESHOLD = float(os.getenv("LEVI_REFUSAL_THRESHOLD", "-8.65"))
@@ -18,6 +18,7 @@ EXAMPLES = ["What is this document about?", "What is the notice period for termi
 
 st.set_page_config(page_title="Levi · legal document Q&A", page_icon="⚖️", layout="wide")
 st.markdown(CSS, unsafe_allow_html=True)
+st.markdown(POLISH_CSS, unsafe_allow_html=True)
 st.session_state.setdefault("history", [])
 st.session_state.setdefault("selected", None)
 
@@ -32,6 +33,7 @@ def api(method: str, path: str, **kwargs):
 
 # ---------------------------------------------------------------- sidebar: library + system
 with st.sidebar:
+    st.markdown('<div class="lv-sidebrand"><span>⚖</span>Levi</div>', unsafe_allow_html=True)
     st.markdown("#### Document library")
     upload = st.file_uploader("Add a contract, lease or agreement", type=["pdf", "docx", "txt"],
                               help="Text-based files only; scanned images need OCR, which is out of scope.")
@@ -76,10 +78,7 @@ with st.sidebar:
 
 
 # ---------------------------------------------------------------- header
-st.markdown('<div class="lv-brand"><span class="name">⚖️ Levi</span><span class="tag">answers from your '
-            'contracts, with the receipts</span></div><div class="lv-sub">Ask anything about your documents. Every '
-            'answer shows the exact passage it came from, and Levi tells you when the answer isn\'t there.</div>',
-            unsafe_allow_html=True)
+st.markdown(hero(), unsafe_allow_html=True)
 
 tab_ask, tab_eval, tab_how = st.tabs(["Ask", "Evaluation", "How it works"])
 
@@ -211,9 +210,9 @@ with tab_ask:
                              '<br><br>Curious? Ask about something the contract never mentions, or ask whether '
                              'you should sign, and watch how Levi handles it.</div>'), unsafe_allow_html=True)
         for i, turn in enumerate(history):
-            with st.chat_message("user"):
+            with st.chat_message("user", avatar=":material/person:"):
                 st.write(turn["question"])
-            with st.chat_message("assistant"):
+            with st.chat_message("assistant", avatar="⚖️"):
                 render_answer(turn, i)
         question = st.chat_input("Ask about your documents..." if selected_docs else "Add a document to start",
                                  disabled=not selected_docs)
