@@ -254,6 +254,41 @@ header[data-testid="stHeader"] { background: transparent; }
 .lv-q::before, .lv-card-title { }
 .lv-hero-eval .lv-hero-sub b { color:#1c5cab; }
 .lv-status span { background: linear-gradient(135deg, #eaf7ee, #e6f6fa); }
+/* ---- fixes from screenshot review ---- */
+.stTabs [data-baseweb="tab-list"] { background:#e6ecf5 !important; padding:5px !important; border-radius:14px !important;
+  gap:4px !important; width:fit-content !important; border:none !important; }
+.stTabs button[data-baseweb="tab"] { padding:8px 20px !important; border-radius:10px !important; height:auto !important;
+  margin:0 !important; background:transparent; }
+.stTabs button[data-baseweb="tab"] p { font-weight:600 !important; font-size:.92rem !important; color:#475467; }
+.stTabs button[data-baseweb="tab"][aria-selected="true"] { background: linear-gradient(135deg,#13325b,#1c5cab) !important;
+  box-shadow: 0 4px 12px rgba(28,92,171,.30) !important; }
+.stTabs button[data-baseweb="tab"][aria-selected="true"] p { color:#ffffff !important; }
+.stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] { display:none !important; height:0 !important; }
+
+[data-testid="stSidebar"] [data-testid="stTooltipIcon"] { display:none !important; }
+[data-testid="stSidebar"] button[kind="tertiary"] { background:transparent !important; border:none !important;
+  min-height:0 !important; padding:2px 6px !important; opacity:.55; }
+[data-testid="stSidebar"] button[kind="tertiary"]:hover { opacity:1; background:rgba(255,255,255,.10) !important; }
+.lv-doctype { margin:-12px 0 8px 30px !important; font-size:.76rem !important; }
+.lv-sidebrand span { font-weight:800; font-size:.95rem !important; }
+
+.lv-try { margin-bottom:10px; }
+.block-container .stButton button[kind="secondary"] { background:#ffffff; border:1px solid #cde2fb; border-radius:12px;
+  color:#13325b; font-weight:500; text-align:left; justify-content:flex-start; padding:10px 14px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04); transition: all .15s ease; }
+.block-container .stButton button[kind="secondary"]:hover { border-color:#2a78d6; background:#eaf2fd;
+  box-shadow: 0 6px 16px rgba(28,92,171,.14); transform: translateY(-1px); }
+
+.lv-flow { background:#ffffff; border:1px solid #dde5f0; border-radius:14px; padding:18px 20px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.05); }
+.lv-flow-step { display:flex; gap:12px; align-items:flex-start; padding:10px 0; position:relative; }
+.lv-flow-step:not(:last-of-type)::after { content:""; position:absolute; left:13px; top:40px; bottom:-8px; width:2px;
+  background: linear-gradient(180deg,#86b6ef,#dde5f0); }
+.lv-flow-step .dot { width:28px; height:28px; flex:0 0 28px; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; color:#fff; font-weight:800; font-size:.8rem;
+  background: linear-gradient(135deg,#1c5cab,#22b8cf); box-shadow: 0 6px 14px rgba(28,92,171,.25); }
+.lv-flow-step .t { font-weight:650; color:#101828; font-size:.92rem; }
+.lv-flow-step .d { color:#475467; font-size:.82rem; margin-top:2px; }
 </style>
 """
 

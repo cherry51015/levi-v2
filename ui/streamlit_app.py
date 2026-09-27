@@ -33,10 +33,9 @@ def api(method: str, path: str, **kwargs):
 
 # ---------------------------------------------------------------- sidebar: library + system
 with st.sidebar:
-    st.markdown('<div class="lv-sidebrand"><span>⚖</span>Levi</div>', unsafe_allow_html=True)
+    st.markdown('<div class="lv-sidebrand"><span>L</span>Levi</div>', unsafe_allow_html=True)
     st.markdown("#### Document library")
-    upload = st.file_uploader("Add a contract, lease or agreement", type=["pdf", "docx", "txt"],
-                              help="Text-based files only; scanned images need OCR, which is out of scope.")
+    upload = st.file_uploader("Add a contract, lease or agreement", type=["pdf", "docx", "txt"])
     if upload and st.session_state.get("last_upload") != upload.file_id:
         with st.spinner("Reading, chunking and embedding..."):
             r = api("POST", "/documents", files={"file": (upload.name, upload.getvalue())})
@@ -53,11 +52,11 @@ with st.sidebar:
     selected_docs = []
     for d in docs:
         c1, c2 = st.columns([6, 1])
-        if c1.checkbox(d["filename"], value=True, key=d["doc_id"],
-                       help=f"{d['n_words']:,} words · {d['n_chunks']} chunks · id {d['doc_id']}"):
+        if c1.checkbox(d["filename"], value=True, key=d["doc_id"]):
             selected_docs.append(d["doc_id"])
-        if (d.get("overview") or {}).get("title"):
-            c1.markdown(f'<div class="lv-doctype">{esc(d["overview"]["title"])}</div>', unsafe_allow_html=True)
+        doc_type = (d.get("overview") or {}).get("title")
+        c1.markdown(f'<div class="lv-doctype">{esc(doc_type) + " · " if doc_type else ""}{d["n_words"]:,} words</div>',
+                    unsafe_allow_html=True)
         if c2.button(":material/delete:", key=f"del-{d['doc_id']}", help="Remove from library", type="tertiary"):
             api("DELETE", f"/documents/{d['doc_id']}")
             st.rerun()
@@ -206,16 +205,21 @@ with tab_ask:
     with chat_col:
         history = st.session_state["history"]
         if not history:
-            st.markdown(card("Try asking", '<div class="lv-def">' + "<br>".join(esc(e) for e in EXAMPLES) +
-                             '<br><br>Curious? Ask about something the contract never mentions, or ask whether '
-                             'you should sign, and watch how Levi handles it.</div>'), unsafe_allow_html=True)
+            st.markdown('<div class="lv-try"><div class="lv-card-title">Try asking</div><div class="lv-def">Pick a '
+                        'question, or ask about something the contract never mentions and watch Levi say so.</div>'
+                        '</div>', unsafe_allow_html=True)
+            ex_cols = st.columns(2)
+            for i, example in enumerate(EXAMPLES):
+                if ex_cols[i % 2].button(example, key=f"ex-{i}", disabled=not selected_docs, width="stretch"):
+                    st.session_state["pending_question"] = example
+                    st.rerun()
         for i, turn in enumerate(history):
             with st.chat_message("user", avatar=":material/person:"):
                 st.write(turn["question"])
             with st.chat_message("assistant", avatar="⚖️"):
                 render_answer(turn, i)
         question = st.chat_input("Ask about your documents..." if selected_docs else "Add a document to start",
-                                 disabled=not selected_docs)
+                                 disabled=not selected_docs) or st.session_state.pop("pending_question", None)
         if question:
             with st.spinner("Retrieving, reranking and answering..."):
                 r = api("POST", "/ask", json={"question": question, "doc_ids": selected_docs})
@@ -230,9 +234,15 @@ with tab_ask:
         if sel is not None and sel < len(st.session_state["history"]):
             render_inspector(st.session_state["history"][sel])
         else:
-            st.markdown(card("How this answer was produced", '<div class="lv-def">Ask a question to see which '
-                             'checks it passed, which passages it used, and where the time went.</div>'),
-                        unsafe_allow_html=True)
+            steps = [("Finds the passages", "keyword + meaning search in under 20 ms"),
+                     ("Checks the evidence", "weak matches are refused, not guessed"),
+                     ("Answers with citations", "every sentence points to its source"),
+                     ("Verifies the answer", "uncited or advice-like sentences are removed")]
+            flow = "".join(f'<div class="lv-flow-step"><div class="dot">{i}</div><div><div class="t">{esc(t)}</div>'
+                           f'<div class="d">{esc(d)}</div></div></div>' for i, (t, d) in enumerate(steps, start=1))
+            st.markdown(f'<div class="lv-flow"><div class="lv-card-title">What happens when you ask</div>{flow}'
+                        f'<div class="lv-def" style="margin-top:10px">After you ask, this panel shows exactly how '
+                        f'your answer was produced.</div></div>', unsafe_allow_html=True)
 
 with tab_eval:
     eval_view.render()
