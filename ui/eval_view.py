@@ -72,8 +72,9 @@ def _generation() -> dict | None:
     }
 
 
-def _tile(value: str, headline: str, detail: str) -> str:
-    return (f'<div class="lv-tile"><div class="v">{esc(value)}</div><div class="k">{esc(headline)}</div>'
+def _tile(value: str, headline: str, detail: str, feature: bool = False) -> str:
+    cls = "lv-tile feature" if feature else "lv-tile"
+    return (f'<div class="{cls}"><div class="v">{esc(value)}</div><div class="k">{esc(headline)}</div>'
             f'<div class="d">{esc(detail)}</div></div>')
 
 
@@ -102,7 +103,8 @@ def render() -> None:
     if gen:
         v = gen["verdicts"]
         tiles.append(_tile(f"{v.get('unsupported', 0)}", "Made-up claims",
-                           f"Across {gen['n_claims']} claims checked by an independent AI judge, none were invented."))
+                           f"Across {gen['n_claims']} claims checked by an independent AI judge, none were invented.",
+                           feature=True))
         tiles.append(_tile(f"{gen['una_refused']}/{gen['n_una']}", "Knows when to say “not here”",
                            "Every question the contract couldn't answer got an honest “not in your document”."
                            if gen["una_refused"] == gen["n_una"] else

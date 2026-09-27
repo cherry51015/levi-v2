@@ -18,19 +18,19 @@ STEPS = [
 PIPELINE = """
 digraph G {
   rankdir=TB; bgcolor="transparent"; pad=0.2; nodesep=0.3; ranksep=0.28;
-  node [shape=box, style="rounded,filled", fillcolor="#fcfcfb", color="#c3c2b7", fontname="Segoe UI", fontsize=11,
+  node [shape=box, style="rounded,filled", fillcolor="#ffffff", color="#c3c2b7", fontname="Segoe UI", fontsize=11,
         fontcolor="#0b0b0b", margin="0.15,0.07"];
   edge [color="#898781", arrowsize=0.6];
 
   subgraph cluster_ingest { label="Ingest (once per file)"; fontname="Segoe UI"; fontsize=10; fontcolor="#52514e";
-    color="#e1e0d9"; style=rounded;
+    color="#dde5f0"; style=rounded;
     up [label="Upload\\nPDF · DOCX · TXT"]; hash [label="SHA-256 doc id\\n(repeat upload = cache hit)"];
     chunk [label="Chunk\\n200 words, 40 overlap\\nkeeps page + offsets"]; embed [label="Embed\\nbge-base-en-v1.5"];
     qd [label="Qdrant\\n(embedded, on disk)", fillcolor="#eef4fc", color="#2a78d6"];
     up -> hash -> chunk -> embed -> qd; }
 
   subgraph cluster_ask { label="Ask (per question)"; fontname="Segoe UI"; fontsize=10; fontcolor="#52514e";
-    color="#e1e0d9"; style=rounded;
+    color="#dde5f0"; style=rounded;
     q [label="Question"]; qe [label="Embed query"]; router [label="Intent router\\nlogistic regression", fillcolor="#fff8e8", color="#fab219"];
     bm [label="BM25"]; dn [label="Vector search"]; rrf [label="RRF fusion"]; rr [label="MiniLM rerank\\ntop 10 → 5"];
     gate [label="Refusal gate\\nscore < −8.65 → refuse", fillcolor="#fff8e8", color="#fab219"];

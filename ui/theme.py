@@ -7,15 +7,15 @@ with an icon + text label, and hairline chrome so the content carries the page.
 import html
 import re
 
-INK = "#0b0b0b"
-INK_2 = "#52514e"
-MUTED = "#898781"
-HAIRLINE = "#e1e0d9"
-SURFACE = "#fcfcfb"
-PAGE = "#f9f9f7"
+INK = "#101828"
+INK_2 = "#475467"
+MUTED = "#7a8699"
+HAIRLINE = "#dde5f0"
+SURFACE = "#ffffff"
+PAGE = "#f3f6fb"
 ACCENT = "#2a78d6"
 ACCENT_SOFT = "#cde2fb"
-WAIT_GRAY = "#c3c2b7"
+WAIT_GRAY = "#b8c2d1"
 GOOD, WARNING, CRITICAL = "#0ca30c", "#fab219", "#d03b3b"
 GOOD_TEXT = "#006300"
 
@@ -25,7 +25,7 @@ CSS = f"""
 .stApp {{ background:{PAGE}; }}
 .block-container {{ padding-top: 2.2rem; max-width: 1400px; }}
 h1, h2, h3 {{ letter-spacing: -0.01em; }}
-[data-testid="stSidebar"] {{ background:#f3f2ee; border-right:1px solid var(--hair); }}
+[data-testid="stSidebar"] {{ background:#e9eff8; border-right:1px solid var(--hair); }}
 
 .lv-brand {{ display:flex; align-items:baseline; gap:.6rem; margin-bottom:.2rem; }}
 .lv-brand .name {{ font-size:1.9rem; font-weight:700; color:var(--ink); }}
@@ -43,11 +43,11 @@ h1, h2, h3 {{ letter-spacing: -0.01em; }}
 .lv-claims li {{ margin:.35rem 0; line-height:1.55; color:var(--ink); }}
 .lv-chip {{ display:inline-block; font-size:.72rem; font-weight:600; color:{ACCENT}; background:#eef4fc; border:1px solid #cde2fb;
             border-radius:6px; padding:0 6px; margin-left:4px; vertical-align:1px; font-family:ui-monospace,Consolas,monospace; }}
-.lv-scope {{ display:inline-block; font-size:.76rem; color:{INK_2}; background:#f1f0ec; border:1px solid {HAIRLINE};
+.lv-scope {{ display:inline-block; font-size:.76rem; color:{INK_2}; background:#eef3fa; border:1px solid {HAIRLINE};
              border-radius:999px; padding:1px 9px; margin-left:6px; }}
 .lv-doctype {{ font-size:.74rem; color:{MUTED}; margin:-10px 0 6px 30px; }}
 .lv-notice {{ border-left:3px solid {WARNING}; background:#fff8e8; padding:8px 12px; border-radius:6px; color:var(--ink); font-size:.9rem; margin:.4rem 0; }}
-.lv-refusal {{ border-left:3px solid {MUTED}; background:#f3f2ee; padding:8px 12px; border-radius:6px; color:var(--ink2); font-size:.92rem; }}
+.lv-refusal {{ border-left:3px solid {MUTED}; background:#e9eff8; padding:8px 12px; border-radius:6px; color:var(--ink2); font-size:.92rem; }}
 
 .lv-src {{ border:1px solid rgba(11,11,11,.10); border-radius:8px; padding:10px 12px; background:#fff; margin-bottom:8px; }}
 .lv-src-head {{ display:flex; justify-content:space-between; align-items:center; font-size:.82rem; color:var(--ink2); margin-bottom:6px; }}
@@ -67,7 +67,7 @@ h1, h2, h3 {{ letter-spacing: -0.01em; }}
 .lv-checks .what {{ color:var(--ink); font-weight:600; min-width:118px; }}
 .lv-checks .detail {{ color:var(--ink2); }}
 
-.lv-track {{ position:relative; height:10px; background:#eceae4; border-radius:5px; margin:22px 0 6px 0; }}
+.lv-track {{ position:relative; height:10px; background:#e3e9f3; border-radius:5px; margin:22px 0 6px 0; }}
 .lv-track .fill {{ position:absolute; left:0; top:0; bottom:0; border-radius:5px; }}
 .lv-track .cut {{ position:absolute; top:-6px; bottom:-6px; width:2px; background:var(--ink); }}
 .lv-track .cutlabel {{ position:absolute; top:-22px; font-size:.7rem; color:var(--ink2); transform:translateX(-50%); white-space:nowrap; }}
@@ -76,7 +76,7 @@ h1, h2, h3 {{ letter-spacing: -0.01em; }}
 .lv-mono {{ font-family:ui-monospace,Consolas,monospace; font-size:.78rem; color:var(--ink2); word-break:break-all; }}
 .lv-def {{ font-size:.78rem; color:var(--ink2); line-height:1.45; }}
 .lv-caveat {{ font-size:.76rem; color:var(--muted); line-height:1.4; margin-top:4px; }}
-.lv-pending {{ display:inline-block; font-size:.72rem; font-weight:600; color:{INK_2}; background:#f1f0ec; border:1px dashed #c3c2b7; border-radius:6px; padding:1px 7px; }}
+.lv-pending {{ display:inline-block; font-size:.72rem; font-weight:600; color:{INK_2}; background:#eef3fa; border:1px dashed #c3c2b7; border-radius:6px; padding:1px 7px; }}
 
 .lv-seg {{ display:flex; height:14px; border-radius:7px; overflow:hidden; gap:2px; background:transparent; margin:8px 0; }}
 .lv-legend {{ display:flex; gap:14px; flex-wrap:wrap; font-size:.8rem; color:var(--ink2); }}
@@ -158,11 +158,11 @@ header[data-testid="stHeader"] { background: transparent; }
 .lv-tile .v, .lv-hero-title { background: linear-gradient(135deg, #0d1b2e 0%, #1c5cab 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-[data-testid="stChatMessage"] { background:#fcfcfb; border:1px solid rgba(11,11,11,.08); border-radius:14px;
+[data-testid="stChatMessage"] { background:#ffffff; border:1px solid rgba(11,11,11,.08); border-radius:14px;
   padding:14px 16px; margin-bottom:10px; box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.04); }
 [data-testid="stChatInput"] { border-radius:14px; box-shadow: 0 6px 20px rgba(16,24,40,.08); }
 
-.stTabs [data-baseweb="tab-list"] { gap:4px; border-bottom:none; background:#ecebe6; padding:4px; border-radius:12px;
+.stTabs [data-baseweb="tab-list"] { gap:4px; border-bottom:none; background:#e3e9f3; padding:4px; border-radius:12px;
   width:fit-content; }
 .stTabs [data-baseweb="tab"] { border-radius:9px; padding:6px 16px; height:auto; }
 .stTabs [aria-selected="true"] { background:#fff; box-shadow: 0 1px 3px rgba(16,24,40,.14); }
@@ -173,6 +173,37 @@ header[data-testid="stHeader"] { background: transparent; }
   margin:-6px 0 14px 0; }
 .lv-sidebrand span { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center;
   background:linear-gradient(135deg,#13325b,#1c5cab); color:#fff; font-size:.9rem; }
+/* ---- blue carried through the whole page, not just the banner ---- */
+[data-testid="stSidebar"] { background: linear-gradient(180deg, #0d1b2e 0%, #13325b 100%) !important; border-right: none; }
+[data-testid="stSidebar"] p, [data-testid="stSidebar"] label, [data-testid="stSidebar"] span,
+[data-testid="stSidebar"] small, [data-testid="stSidebar"] div { color: #dbe6f5; }
+[data-testid="stSidebar"] h4 { color: #9ec5f4 !important; }
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"], [data-testid="stSidebar"] .lv-caveat { color: #9fb3cc !important; }
+[data-testid="stSidebar"] .lv-doctype { color: #86b6ef !important; }
+[data-testid="stSidebar"] .lv-checks li { border-top-color: rgba(255,255,255,.10); }
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] { background: rgba(255,255,255,.06);
+  border: 1px dashed rgba(255,255,255,.28); border-radius: 12px; }
+[data-testid="stSidebar"] [data-testid="stFileUploaderFile"] { background: rgba(255,255,255,.06); border-radius: 8px; }
+[data-testid="stSidebar"] button { background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.24); color: #fff; }
+[data-testid="stSidebar"] hr { border-color: rgba(255,255,255,.12); }
+[data-testid="stSidebar"] [data-testid="stAlert"], [data-testid="stSidebar"] [data-testid="stAlert"] * { color: #101828 !important; }
+.lv-sidebrand { color: #ffffff !important; }
+.lv-sidebrand span { background: linear-gradient(135deg, #2a78d6, #86b6ef) !important; }
+
+.stTabs [aria-selected="true"] { background: linear-gradient(135deg, #13325b, #1c5cab) !important; }
+.stTabs [aria-selected="true"] p { color: #ffffff !important; }
+
+.block-container h4 { border-left: 3px solid #2a78d6; padding-left: 10px; }
+
+[data-testid="stChatMessage"][aria-label="Chat message from user"] { background: #eaf2fd; border-color: #cde2fb; }
+
+.lv-tile.feature { background: linear-gradient(135deg, #0d1b2e 0%, #13325b 55%, #1c5cab 100%); border-color: transparent; }
+.lv-tile.feature::before { background: linear-gradient(90deg, #86b6ef, #cde2fb); }
+.lv-tile.feature .v { background: none; -webkit-background-clip: initial; background-clip: initial; color: #ffffff; }
+.lv-tile.feature .k { color: #ffffff; }
+.lv-tile.feature .d { color: #cde2fb; }
+.lv-card-title { color: #1c5cab; }
+.lv-step .n { background: linear-gradient(135deg, #13325b, #1c5cab); }
 </style>
 """
 

@@ -93,7 +93,7 @@ def tradeoff_scatter(df: pd.DataFrame, shipped: str) -> alt.Chart:
                   axis=alt.Axis(values=[1, 10, 100, 1000, 10000], format=",")),
         y=alt.Y("mrr:Q", scale=alt.Scale(zero=False, padding=12), title="MRR (higher = right chunk ranked higher)"),
     )
-    points = alt.Chart(df).mark_circle(size=110, opacity=1, stroke="#fcfcfb", strokeWidth=2).encode(
+    points = alt.Chart(df).mark_circle(size=110, opacity=1, stroke="#ffffff", strokeWidth=2).encode(
         **enc, color=alt.Color("role:N", scale=alt.Scale(domain=["shipped", "tested"], range=[ACCENT, MUTED]),
                                legend=alt.Legend(title=None, orient="bottom")),
         tooltip=[alt.Tooltip("config:N"), alt.Tooltip("hit1:Q", title="hit@1", format=".3f"),
