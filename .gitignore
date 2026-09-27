@@ -8,8 +8,8 @@ eval/data/raw/
 eval/data/*.jsonl
 eval/results/*.npy
 .hf_cache/
-data/
-logs/
+/data/
+/logs/
 eval/results/*.log
 logs_server.txt
 logs_ui.txt
