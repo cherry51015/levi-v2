@@ -139,12 +139,12 @@ STATUS = {
 STAGE_NAMES = {
     "embed_query": "Embed query", "route": "Intent router", "bm25": "BM25 keyword search",
     "dense": "Vector search", "fusion": "RRF fusion", "rerank": "Cross-encoder rerank",
-    "expand_context": "Expand context",
+    "expand_context": "Expand context", "overview_build": "Build document overview (one-time)",
     "llm_wait": "Rate-limit wait", "llm": "LLM generation", "llm_repair": "LLM JSON repair",
     "validate": "Validate JSON", "output_check": "Advice check",
 }
 # Execution order (the timings dict records llm_wait after llm, but the wait happens first).
-STAGE_ORDER = ["embed_query", "route", "bm25", "dense", "fusion", "rerank", "expand_context",
+STAGE_ORDER = ["embed_query", "route", "overview_build", "bm25", "dense", "fusion", "rerank", "expand_context",
                "llm_wait", "llm", "validate", "llm_repair", "output_check"]
 
 

@@ -12,7 +12,7 @@ import json
 from pydantic import BaseModel, ValidationError
 
 from levi.answer import Claim, enforce_citations
-from levi.llm import LLMClient
+from levi.llm import LLMClient, LLMResult
 from levi.retrieval import BM25Index
 from levi.schemas import Chunk
 
@@ -48,8 +48,9 @@ def select_passages(chunks: list[Chunk]) -> list[Chunk]:
     return sorted(picked.values(), key=lambda c: c.index)[:MAX_PASSAGES]
 
 
-async def build_overview(llm: LLMClient, chunks: list[Chunk]) -> dict | None:
-    """Returns {"title": str, "claims": [{"text": str, "chunk_ids": [...]}]} or None if nothing grounded survived."""
+async def build_overview(llm: LLMClient, chunks: list[Chunk]) -> tuple[dict | None, LLMResult]:
+    """Returns (overview, llm_result). overview = {"title", "claims": [{"text", "chunk_ids"}], "built_by"},
+    or None if nothing grounded survived. llm_result carries the provider and rate-limit wait time."""
     passages = select_passages(chunks)
     refs = {f"c{i}": c for i, c in enumerate(passages, start=1)}
     excerpts = "\n".join(f'<chunk id="{r}">\n{c.text}\n</chunk>' for r, c in refs.items())
@@ -60,9 +61,10 @@ async def build_overview(llm: LLMClient, chunks: list[Chunk]) -> dict | None:
         text = result.text.strip().removeprefix("```json").removeprefix("```").removesuffix("```")
         parsed = _ModelOverview.model_validate(json.loads(text))
     except (json.JSONDecodeError, ValidationError):
-        return None
+        return None, result
     claims, _dropped = enforce_citations(parsed, set(refs))  # same rule as answers: uncited claims are dropped
     if not claims:
-        return None
+        return None, result
     return {"title": parsed.document_type.strip()[:60],
-            "claims": [{"text": c.text, "chunk_ids": [refs[r].id for r in c.citations]} for c in claims]}
+            "claims": [{"text": c.text, "chunk_ids": [refs[r].id for r in c.citations]} for c in claims],
+            "built_by": result.provider}, result

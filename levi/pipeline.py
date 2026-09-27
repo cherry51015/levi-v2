@@ -75,25 +75,33 @@ class Pipeline:
             return await asyncio.to_thread(fn, *args, **kwargs)
         return fn(*args, **kwargs)
 
-    async def ensure_overview(self, doc_id: str) -> dict | None:
-        """Build and store a document's overview if it doesn't have one yet (one LLM call, then cached)."""
+    async def ensure_overview(self, doc_id: str, timer: StageTimer | None = None) -> tuple[dict | None, bool]:
+        """Build and store a document's overview if it doesn't have one yet (one LLM call, then cached).
+        Returns (overview, built_now)."""
         store = self.retriever.store
         meta = next((m for m in store.list_documents() if m.doc_id == doc_id), None)
         if meta is None:
-            return None
+            return None, False
         if meta.overview:
-            return meta.overview
-        overview = await build_overview(self.llm, store.get_chunks([doc_id]))
+            return meta.overview, False
+        timer = timer or StageTimer()
+        with timer.stage("overview_build"):
+            overview, result = await build_overview(self.llm, store.get_chunks([doc_id]))
+        timer.move("overview_build", "llm_wait", result.waited_ms)
         if overview:
             store.update_meta(meta.model_copy(update={"overview": overview}))
-        return overview
+        return overview, True
 
     async def _answer_from_overview(self, doc_ids: list[str], metas: dict, finish, timer: StageTimer,
                                     advice: bool) -> "AskResponse":
         chunks = {c.id: c for c in self.retriever.store.get_chunks(doc_ids)}
         claims, citations, ref_of = [], [], {}
-        with timer.stage("overview"):
-            overviews = [(d, await self.ensure_overview(d)) for d in doc_ids[:3]]
+        overviews, built_by = [], None
+        for d in doc_ids[:3]:
+            ov, built_now = await self.ensure_overview(d, timer)
+            overviews.append((d, ov))
+            if built_now and ov:
+                built_by = ov.get("built_by")  # an LLM call happened in this request: report which model
         for doc_id, ov in overviews:
             if not ov:
                 continue
@@ -118,7 +126,7 @@ class Pipeline:
                                       highlights=words))
         answer = " ".join(f"{c.text} [{', '.join(c.citations)}]" for c in claims)
         return finish(status="answered", answer=answer, claims=claims, citations=citations, answer_mode="overview",
-                      provider="document overview", notice=ADVICE_NOTE if advice else None)
+                      provider=built_by or "stored overview", notice=ADVICE_NOTE if advice else None)
 
     @observe(name="intent_router", as_type="guardrail", capture_input=False, capture_output=False)
     def _route(self, question: str, qvec, timer: StageTimer) -> tuple[str, float, str]:

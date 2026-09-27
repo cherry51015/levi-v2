@@ -82,15 +82,15 @@ def test_overview_drops_uncited_claims():
     reply = json.dumps({"document_type": "Residential lease", "claims": [
         {"text": "A lease between Meera and Arjun.", "citations": ["c1"]},
         {"text": "Invented fact.", "citations": ["c99"]}]})
-    ov = asyncio.run(build_overview(FakeLLM(reply), lease_chunks()))
-    assert ov["title"] == "Residential lease"
+    ov, result = asyncio.run(build_overview(FakeLLM(reply), lease_chunks()))
+    assert ov["title"] == "Residential lease" and ov["built_by"] == result.provider == "fake/m"
     assert [c["text"] for c in ov["claims"]] == ["A lease between Meera and Arjun."]
     assert ov["claims"][0]["chunk_ids"] == ["d:0"]
 
 
 def test_overview_with_nothing_grounded_is_none():
     reply = json.dumps({"document_type": "x", "claims": [{"text": "made up", "citations": []}]})
-    assert asyncio.run(build_overview(FakeLLM(reply), lease_chunks())) is None
+    assert asyncio.run(build_overview(FakeLLM(reply), lease_chunks()))[0] is None
 
 
 # --- pipeline integration (fakes, no models)
@@ -134,6 +134,8 @@ def test_document_level_question_is_answered_from_a_cached_overview():
     assert r1.claims[0].text == "This is the NDA." and r1.citations[0].chunk_id.startswith("nda:")
     r2 = asyncio.run(p.ask("summarise the second document", ["lease", "nda"]))
     assert r2.answer_mode == "overview" and llm.calls == 1  # second question reuses the stored overview
+    assert "overview_build" in r1.timings_ms and r1.provider == "fake/m"  # first: built now, model reported
+    assert "overview_build" not in r2.timings_ms and r2.provider == "stored overview"
 
 
 def test_overview_failure_falls_back_to_passage_search():

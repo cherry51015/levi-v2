@@ -95,7 +95,8 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
     try:
         # One LLM call per document, so "what is this about?" has a cited overview ready.
         # If the LLM is unavailable the upload still succeeds; the overview is built on first use.
-        if await request.app.state.pipeline.ensure_overview(meta.doc_id):
+        overview, _ = await request.app.state.pipeline.ensure_overview(meta.doc_id)
+        if overview:
             meta = next(m for m in request.app.state.store.list_documents() if m.doc_id == meta.doc_id)
     except Exception:
         log.warning("overview generation failed for %s; will retry on first use", meta.doc_id)

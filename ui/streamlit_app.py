@@ -171,8 +171,15 @@ def render_inspector(turn: dict) -> None:
     timings = b["timings_ms"]
     model = (b.get("provider") or "none").rsplit("/", 1)[-1]
     attempts = b.get("llm_attempts", [])
-    st.markdown(card("Summary", '<div class="lv-kv">' + stat("Total time", fmt_ms(b["total_ms"]),
-                                                             f'LLM {fmt_ms(timings.get("llm", 0))}') +
+    llm_ms = timings.get("llm", 0) + timings.get("overview_build", 0)
+    if b.get("answer_mode") == "overview":
+        time_hint = (f'overview built now: {fmt_ms(timings["overview_build"])}' if "overview_build" in timings
+                     else "stored overview, no LLM call")
+    else:
+        time_hint = f"LLM {fmt_ms(llm_ms)}"
+    if timings.get("llm_wait"):
+        time_hint += f' · waited {fmt_ms(timings["llm_wait"])} for rate limit'
+    st.markdown(card("Summary", '<div class="lv-kv">' + stat("Total time", fmt_ms(b["total_ms"]), time_hint) +
                      stat("Model", model if b.get("provider") else "no LLM call",
                           f"{len(attempts)} attempt(s)" if attempts else "") +
                      stat("Claims", str(len(b.get("claims", []))), f'{len(b.get("citations", []))} sources') + "</div>"),
